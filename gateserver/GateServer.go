@@ -38,7 +38,6 @@ type GateServerConfig struct {
 }
 
 var (
-	SERVERID      = "server_id"
 	serverCodec   ServerProtocol             //服务器编解码
 	innerCodec    InnerProtocol              //内部服务器编解码
 	serverHandler ServerMessageHandler       //服务器消息处理器
@@ -114,7 +113,7 @@ func NewGateServer() *GateServer {
 	server := &GateServer{
 		IsRunning:    false,
 		userSessions: make(map[string]network.SocketSession),
-		gameSessions: make(map[int][]network.SocketSession),
+		gameSessions: make(map[int]network.SocketSession),
 	}
 	return server
 }
@@ -217,7 +216,7 @@ func (server *GateServer) LoadSessionConfig(filePath string) {
 }
 //网关注册内部游戏服务器
 func (server *GateServer)RegisterInnerGameServer(serverId int,session network.SocketSession){
-	session.SetAttribute(SERVERID,serverId)
+	session.SetAttribute(network.SERVERID,serverId)
 	defer server.lock.Unlock()
 	server.lock.Lock()
 	_,ok :=server.gameSessions[serverId]

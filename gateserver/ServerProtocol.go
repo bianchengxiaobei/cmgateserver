@@ -11,9 +11,6 @@ import (
 	"cmgateserver/message"
 )
 
-const (
-	PreOrderId = "pre_orderId"
-)
 type ServerProtocol struct {
 	pool 	*ProtoMessagePool
 }
@@ -47,12 +44,12 @@ func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, da
 	 if err != nil{
 	 	return nil,0,err
 	 }
-	 var perOrder = (session.GetAttribute(PreOrderId)).(int)
+	 var perOrder = (session.GetAttribute(network.PreOrderId)).(int)
 	 if msgHeader.orderId == perOrder{
 	 	if msgHeader.orderId == 0{
 	 		fmt.Println("用户客户端发送消息序列成功")
 		}
-		session.SetAttribute(PreOrderId,msgHeader.orderId+1)
+		session.SetAttribute(network.PreOrderId,msgHeader.orderId+1)
 	 }else {
 	 	fmt.Println("发送消息序列出错")
 	 }
