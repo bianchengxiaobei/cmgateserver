@@ -2,6 +2,7 @@ package gateserver
 
 import (
 	"github.com/bianchengxiaobei/cmgo/network"
+	"github.com/bianchengxiaobei/cmgo/log4g"
 )
 type InnnerServerMessageHandler struct {
 	server network.ISocket
@@ -9,6 +10,7 @@ type InnnerServerMessageHandler struct {
 }
 
 func (handler InnnerServerMessageHandler) MessageReceived(session network.SocketSessionInterface, message interface{}) error {
+	log4g.Info("收到消息!")
 	return nil
 }
 
@@ -17,6 +19,7 @@ func (handler InnnerServerMessageHandler) MessageSent(session network.SocketSess
 }
 
 func (handler InnnerServerMessageHandler) SessionOpened(session network.SocketSessionInterface) error {
+	log4g.Info("内部客户端连接上！")
 	return nil
 }
 

@@ -1,0 +1,1 @@
+{"LogToFile":false,"LogOutPath":"/output.log"}

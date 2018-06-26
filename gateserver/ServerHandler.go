@@ -19,6 +19,7 @@ func (handler ServerMessageHandler) MessageSent(session network.SocketSessionInt
 }
 
 func (handler ServerMessageHandler) SessionOpened(session network.SocketSessionInterface) error {
+	fmt.Println("fefef")
 	if server,ok := handler.server.(*network.TcpServer);ok{
 		fmt.Printf("Session总数:%d",len(server.Sessions))
 	}

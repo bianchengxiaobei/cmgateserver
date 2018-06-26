@@ -62,7 +62,7 @@ func (server *GateServer) Init(gateBaseConfig string, gateConfig string, innerCo
 	//设置编解码
 	serverCodec = ServerProtocol{
 		pool: &ProtoMessagePool{
-			messages: make(map[int]reflect.Type),
+			messages: make(map[int32]reflect.Type),
 		},
 	}
 	serverCodec.Init()
@@ -97,7 +97,7 @@ func (server *GateServer) Run() {
 		//开始对内部逻辑服的监听
 		if server.InnerConnectServer != nil {
 			server.InnerConnectServer.Bind(server.InnerAddr)
-			log4g.Info(server.Name+"内部监听开始运行!")
+			log4g.Infof("%s内部监听开始运行!,端口:[%s]",server.Name,server.InnerAddr)
 		}
 		server.IsRunning = true
 	}

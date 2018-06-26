@@ -1,0 +1,1 @@
+{"TcpNoDelay":true,"TcpKeepAlive":true,"TcpKeepAlivePeriod":3000000000,"TcpReadBuffSize":1024,"TcpWriteBuffSize":1024,"ReadChanLen":1,"WriteChanLen":1}
