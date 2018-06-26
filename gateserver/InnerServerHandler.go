@@ -2,15 +2,30 @@ package gateserver
 
 import (
 	"github.com/bianchengxiaobei/cmgo/network"
-	"github.com/bianchengxiaobei/cmgo/log4g"
+	"errors"
 )
 type InnnerServerMessageHandler struct {
 	server network.ISocket
 	gateServer *GateServer
+	pool	*HandlerPool
 }
 
+func (handler InnnerServerMessageHandler)Init() {
+	handler.pool.Register(10000,&RegisterGateHandler{GateServer:handler.gateServer,})
+}
+
+
 func (handler InnnerServerMessageHandler) MessageReceived(session network.SocketSessionInterface, message interface{}) error {
-	log4g.Info("收到消息!")
+	if writeMsg,ok := message.(network.WriteMessage);!ok{
+		return errors.New("不是WriteMessage类型")
+	}else{
+		action := handler.pool.GetHandler(int32(writeMsg.MsgId))
+		if action == nil{
+			return errors.New("找不到该Handler")
+		}else{
+			action.Action(session,writeMsg.MsgData)
+		}
+	}
 	return nil
 }
 
@@ -19,7 +34,6 @@ func (handler InnnerServerMessageHandler) MessageSent(session network.SocketSess
 }
 
 func (handler InnnerServerMessageHandler) SessionOpened(session network.SocketSessionInterface) error {
-	log4g.Info("内部客户端连接上！")
 	return nil
 }
 

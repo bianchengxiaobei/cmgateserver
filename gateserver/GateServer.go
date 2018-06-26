@@ -27,7 +27,7 @@ type GateServer struct {
 	//玩家客户端通信列表，存的是网关与客户端的session
 	userSessions map[string]network.SocketSession
 	//游戏服务器通信列表，存的是网关与游戏服务器的session
-	gameSessions map[int]network.SocketSession
+	gameSessions map[int32]network.SocketSessionInterface
 	lock sync.Mutex
 }
 type GateServerConfig struct {
@@ -72,11 +72,19 @@ func (server *GateServer) Init(gateBaseConfig string, gateConfig string, innerCo
 	serverHandler = ServerMessageHandler{
 		server: server.UserClientServer,
 		gateServer:server,
+		pool:&HandlerPool{
+			handlers:make(map[int32]HandlerBase),
+		},
 	}
+	serverHandler.Init()
 	innerHandler = InnnerServerMessageHandler{
 		server: server.InnerConnectServer,
 		gateServer:server,
+		pool:&HandlerPool{
+			handlers:make(map[int32]HandlerBase),
+		},
 	}
+	innerHandler.Init()
 	server.UserClientServer.SetMessageHandler(serverHandler)
 	server.InnerConnectServer.SetMessageHandler(innerHandler)
 }
@@ -113,7 +121,7 @@ func NewGateServer() *GateServer {
 	server := &GateServer{
 		IsRunning:    false,
 		userSessions: make(map[string]network.SocketSession),
-		gameSessions: make(map[int]network.SocketSession),
+		gameSessions: make(map[int32]network.SocketSessionInterface),
 	}
 	return server
 }
@@ -215,7 +223,7 @@ func (server *GateServer) LoadSessionConfig(filePath string) {
 	server.InnerAddr = config.InnerAddr
 }
 //网关注册内部游戏服务器
-func (server *GateServer)RegisterInnerGameServer(serverId int,session network.SocketSession){
+func (server *GateServer)RegisterInnerGameServer(serverId int32,session network.SocketSessionInterface){
 	session.SetAttribute(network.SERVERID,serverId)
 	defer server.lock.Unlock()
 	server.lock.Lock()
@@ -228,7 +236,7 @@ func (server *GateServer)RegisterInnerGameServer(serverId int,session network.So
 	}
 }
 //网关移除内部游戏服务器
-func (server *GateServer)RemoveInnerGameServer(serverId int,session network.SocketSession){
+func (server *GateServer)RemoveInnerGameServer(serverId int32,session network.SocketSessionInterface){
 	server.lock.Lock()
 	defer  server.lock.Unlock()
 	_,ok := server.gameSessions[serverId]
