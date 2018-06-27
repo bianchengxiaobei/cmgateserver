@@ -65,7 +65,7 @@ func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, da
 	}
 	var msgType = protocol.pool.GetMessageType(msgHeader.MessageId)
 	msg := reflect.New(msgType).Interface()
-	err = proto.Unmarshal(ioBuffer.Next(int(msgHeader.MsgBodyLen)), msg.(proto.Message))
+	err = proto.Unmarshal(ioBuffer.Bytes(), msg.(proto.Message))
 	if err != nil {
 		log4g.Error(err.Error())
 	}

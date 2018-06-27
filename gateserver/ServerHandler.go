@@ -4,6 +4,7 @@ import (
 	"github.com/bianchengxiaobei/cmgo/network"
 	"github.com/bianchengxiaobei/cmgo/log4g"
 	"errors"
+	"cmgateserver/msgHandler"
 )
 
 type ServerMessageHandler struct {
@@ -13,7 +14,7 @@ type ServerMessageHandler struct {
 }
 
 func (handler ServerMessageHandler)Init() {
-
+	handler.pool.Register(1000,&msgHandler.UserLoginHandler{GateServer:handler.gateServer,})
 }
 
 func (handler ServerMessageHandler) MessageReceived(session network.SocketSessionInterface, message interface{}) error {
@@ -22,8 +23,11 @@ func (handler ServerMessageHandler) MessageReceived(session network.SocketSessio
 		return errors.New("不是WriteMessage类型")
 	}else{
 		log4g.Infof("收到消息%d",writeMsg.MsgId)
-		if handler.pool.GetHandler(int32(writeMsg.MsgId)) == nil{
-
+		msgHandler := handler.pool.GetHandler(int32(writeMsg.MsgId))
+		if msgHandler == nil{
+			//说明是直接发给游戏服务器的
+		}else{
+			msgHandler.Action(session,writeMsg.MsgData)
 		}
 	}
 	return nil

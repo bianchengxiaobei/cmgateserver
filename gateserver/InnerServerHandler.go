@@ -3,6 +3,7 @@ package gateserver
 import (
 	"github.com/bianchengxiaobei/cmgo/network"
 	"errors"
+	"cmgateserver/msgHandler"
 )
 type InnnerServerMessageHandler struct {
 	server network.ISocket
@@ -11,7 +12,7 @@ type InnnerServerMessageHandler struct {
 }
 
 func (handler InnnerServerMessageHandler)Init() {
-	handler.pool.Register(10000,&RegisterGateHandler{GateServer:handler.gateServer,})
+	handler.pool.Register(10000,&msgHandler.RegisterGateHandler{GateServer:handler.gateServer,})
 }
 
 

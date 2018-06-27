@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"github.com/bianchengxiaobei/cmgo/log4g"
 	"sync"
+	"cmgateserver/db"
 )
 
 type GateServer struct {
@@ -25,10 +26,11 @@ type GateServer struct {
 	InnerConnectServer    *network.TcpServer
 	IsRunning             bool
 	//玩家客户端通信列表，存的是网关与客户端的session
-	userSessions map[string]network.SocketSession
+	userSessions map[int64]network.SocketSessionInterface
 	//游戏服务器通信列表，存的是网关与游戏服务器的session
 	gameSessions map[int32]network.SocketSessionInterface
 	lock sync.Mutex
+	DBManger		*db.MongoBDManager
 }
 type GateServerConfig struct {
 	Name       string
@@ -70,16 +72,16 @@ func (server *GateServer) Init(gateBaseConfig string, gateConfig string, innerCo
 	server.InnerConnectServer.SetProtocolCodec(serverCodec)
 	//设置事件处理器
 	serverHandler = ServerMessageHandler{
-		server: server.UserClientServer,
-		gateServer:server,
+		server:     server.UserClientServer,
+		gateServer: server,
 		pool:&HandlerPool{
-			handlers:make(map[int32]HandlerBase),
+			handlers: make(map[int32]HandlerBase),
 		},
 	}
 	serverHandler.Init()
 	innerHandler = InnnerServerMessageHandler{
-		server: server.InnerConnectServer,
-		gateServer:server,
+		server:     server.InnerConnectServer,
+		gateServer: server,
 		pool:&HandlerPool{
 			handlers:make(map[int32]HandlerBase),
 		},
@@ -87,6 +89,8 @@ func (server *GateServer) Init(gateBaseConfig string, gateConfig string, innerCo
 	innerHandler.Init()
 	server.UserClientServer.SetMessageHandler(serverHandler)
 	server.InnerConnectServer.SetMessageHandler(innerHandler)
+	//BD
+	server.DBManger = db.NewMongoBD("127.0.0.1",5)
 }
 func (server *GateServer) Run() {
 	defer func() {
@@ -120,7 +124,7 @@ func (server *GateServer) Close() {
 func NewGateServer() *GateServer {
 	server := &GateServer{
 		IsRunning:    false,
-		userSessions: make(map[string]network.SocketSession),
+		userSessions: make(map[int64]network.SocketSessionInterface),
 		gameSessions: make(map[int32]network.SocketSessionInterface),
 	}
 	return server
@@ -246,4 +250,24 @@ func (server *GateServer)RemoveInnerGameServer(serverId int32,session network.So
 		delete(server.gameSessions, serverId)
 		log4g.Infof("网关移除游戏服务器id:%d",serverId)
 	}
+}
+func (server *GateServer)GetId() int{
+	return server.Id
+}
+func (server *GateServer)GetDBManager() *db.MongoBDManager{
+	return server.DBManger
+}
+//注册玩家通信
+func (server *GateServer)RegisterUser(serverId int32,userId int64,session network.SocketSessionInterface){
+	server.lock.Lock()
+	defer  server.lock.Unlock()
+	server.userSessions[userId] = session
+	session.SetAttribute(network.USERID,userId)
+	session.SetAttribute(network.SERVERID,serverId)
+}
+//移除玩家通信
+func (server *GateServer)RemoveUserSession(userId int64){
+	server.lock.Lock()
+	defer server.lock.Unlock()
+	delete(server.userSessions, userId)
 }
