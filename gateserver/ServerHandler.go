@@ -17,9 +17,11 @@ func (handler ServerMessageHandler)Init() {
 }
 
 func (handler ServerMessageHandler) MessageReceived(session network.SocketSessionInterface, message interface{}) error {
+
 	if writeMsg,ok := message.(network.WriteMessage);!ok{
 		return errors.New("不是WriteMessage类型")
 	}else{
+		log4g.Infof("收到消息%d",writeMsg.MsgId)
 		if handler.pool.GetHandler(int32(writeMsg.MsgId)) == nil{
 
 		}
@@ -28,6 +30,7 @@ func (handler ServerMessageHandler) MessageReceived(session network.SocketSessio
 }
 
 func (handler ServerMessageHandler) MessageSent(session network.SocketSessionInterface, message interface{}) error {
+
 	return nil
 }
 

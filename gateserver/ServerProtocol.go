@@ -25,6 +25,9 @@ var messageHeaderLen = (int)(unsafe.Sizeof(MessageHeader{}))
 func (protocol ServerProtocol) Init() {
 	//注册消息
 	protocol.pool.Register(10000, reflect.TypeOf(message.M2G_RegisterGate{}))
+
+
+	protocol.pool.Register(1000,reflect.TypeOf(message.C2G_UserLogin{}))
 }
 func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, data []byte) (interface{}, int, error) {
 	var (
@@ -38,13 +41,13 @@ func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, da
 	if ioBuffer.Len() < messageHeaderLen {
 		return nil, 0, nil
 	}
-	allLen := int(msgHeader.MsgBodyLen) + messageHeaderLen
-	if ioBuffer.Len() < allLen {
-		return nil, 0, nil
-	}
 	err = binary.Read(ioBuffer, binary.LittleEndian, &msgHeader)
 	if err != nil {
 		return nil, 0, err
+	}
+	allLen := int(msgHeader.MsgBodyLen) + messageHeaderLen
+	if ioBuffer.Len() < allLen {
+		return nil, 0, nil
 	}
 	var perOrder = session.GetAttribute(network.PreOrderId)
 	if perOrder == nil {
@@ -56,7 +59,7 @@ func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, da
 		if msgHeader.OrderId == perOrder {
 			session.SetAttribute(network.PreOrderId, msgHeader.OrderId+1)
 		} else {
-			log4g.Error("发送消息序列出错")
+			log4g.Errorf("发送消息序列出错[%d]",msgHeader.OrderId)
 			return nil, 0, nil
 		}
 	}
