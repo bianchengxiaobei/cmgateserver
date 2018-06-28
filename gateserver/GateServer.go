@@ -27,8 +27,10 @@ type GateServer struct {
 	IsRunning             bool
 	//玩家客户端通信列表，存的是网关与客户端的session
 	userSessions map[int64]network.SocketSessionInterface
-	//游戏服务器通信列表，存的是网关与游戏服务器的session
+	//内部游戏服务器通信列表，存的是网关与游戏服务器的session
 	gameSessions map[int32]network.SocketSessionInterface
+	//玩家游戏角色通信列表，存的是玩家角色和客户端的session
+	roleSessions map[int64]network.SocketSessionInterface
 	lock sync.Mutex
 	DBManger		*db.MongoBDManager
 }
@@ -126,6 +128,7 @@ func NewGateServer() *GateServer {
 		IsRunning:    false,
 		userSessions: make(map[int64]network.SocketSessionInterface),
 		gameSessions: make(map[int32]network.SocketSessionInterface),
+		roleSessions:make(map[int64]network.SocketSessionInterface),
 	}
 	return server
 }
@@ -258,7 +261,7 @@ func (server *GateServer)GetDBManager() *db.MongoBDManager{
 	return server.DBManger
 }
 //注册玩家通信
-func (server *GateServer)RegisterUser(serverId int32,userId int64,session network.SocketSessionInterface){
+func (server *GateServer)RegisterUserSession(serverId int32,userId int64,session network.SocketSessionInterface){
 	server.lock.Lock()
 	defer  server.lock.Unlock()
 	server.userSessions[userId] = session
@@ -270,4 +273,25 @@ func (server *GateServer)RemoveUserSession(userId int64){
 	server.lock.Lock()
 	defer server.lock.Unlock()
 	delete(server.userSessions, userId)
+}
+//取得玩家通信
+func (server *GateServer)GetUserSession(userId int64) (session network.SocketSessionInterface){
+	return server.userSessions[userId]
+}
+//注册玩家角色通信
+func (server *GateServer)RegisterRoleSession(roleId int64,session network.SocketSessionInterface){
+	server.lock.Lock()
+	defer  server.lock.Unlock()
+	server.roleSessions[roleId] = session
+	session.SetAttribute(network.ROLEID, roleId)
+}
+//移除玩家角色通信
+func (server *GateServer)RemoveRoleSession(roleId int64){
+	server.lock.Lock()
+	defer server.lock.Unlock()
+	delete(server.roleSessions, roleId)
+}
+//取得玩家角色通信
+func (server *GateServer)GetRoleSession(roleId int64) (session network.SocketSessionInterface){
+	return server.roleSessions[roleId]
 }

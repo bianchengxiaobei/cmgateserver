@@ -10,6 +10,10 @@ type IGateServer interface {
 	RemoveInnerGameServer(serverId int32,session network.SocketSessionInterface)
 	GetId()  int
 	GetDBManager() *db.MongoBDManager
-	RegisterUser(serverId int32,userId int64,session network.SocketSessionInterface)
+	RegisterUserSession(serverId int32,userId int64,session network.SocketSessionInterface)
 	RemoveUserSession(userId int64)
+	GetUserSession(userId int64)(session network.SocketSessionInterface)
+	RegisterRoleSession(roleId int64,session network.SocketSessionInterface)
+	RemoveRoleSession(roleId int64)
+	GetRoleSession(roleId int64) (session network.SocketSessionInterface)
 }

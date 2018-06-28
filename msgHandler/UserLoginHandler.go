@@ -45,7 +45,26 @@ func (handler *UserLoginHandler) Action(session network.SocketSessionInterface,m
 			return
 		}
 		//设置登录状态
-		handler.GateServer.RegisterUser(user.ServerId,user.UserId,session)
+		//如果已经登录的话，就替换老的session
+		oldSession := handler.GateServer.GetUserSession(user.UserId)
+		if oldSession != nil && oldSession.Id() != session.Id(){
+			log4g.Infof("玩家UserId[%d]IP[%s]被踢下线，另一个玩家IP[%s]上线",user.UserId,oldSession.RemoteAddr(),session.RemoteAddr())
+			//发送给老session顶替下线的消息
+			//然后移除网关服务器里面的玩家通信和角色通信
+			aRoleId := oldSession.GetAttribute(network.ROLEID)
+			if aRoleId != nil{
+				if oldRoleId,ok := aRoleId.(int64);ok{
+					handler.GateServer.RemoveRoleSession(oldRoleId)
+				}
+			}
+			aUserId := oldSession.GetAttribute(network.USERID)
+			if aUserId != nil{
+				if oldUserId,ok := aUserId.(int64);ok{
+					handler.GateServer.RemoveUserSession(oldUserId)
+				}
+			}
+		}
+		handler.GateServer.RegisterUserSession(user.ServerId,user.UserId,session)
 		log4g.Infof("游戏玩家[%s]登录游戏服务器[%d]",protoMsg.UserName,protoMsg.GameServerId)
 	}
 }
