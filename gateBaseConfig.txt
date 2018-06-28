@@ -1,1 +1,0 @@
-{"Name":"网关服务器","Id":1,"SocketAddr":":8000","InnerAddr":":8001"}

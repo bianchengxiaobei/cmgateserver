@@ -11,6 +11,8 @@ import (
 	"github.com/bianchengxiaobei/cmgo/log4g"
 	"sync"
 	"cmgateserver/db"
+	"github.com/golang/protobuf/proto"
+	"errors"
 )
 
 type GateServer struct {
@@ -46,6 +48,7 @@ var (
 	innerCodec    InnerProtocol              //内部服务器编解码
 	serverHandler ServerMessageHandler       //服务器消息处理器
 	innerHandler  InnnerServerMessageHandler //内部服务器消息处理器
+	NoGameSessionError	error = errors.New("没有逻辑服游戏Session节点")
 )
 
 //初始化网关配置
@@ -294,4 +297,18 @@ func (server *GateServer)RemoveRoleSession(roleId int64){
 //取得玩家角色通信
 func (server *GateServer)GetRoleSession(roleId int64) (session network.SocketSessionInterface){
 	return server.roleSessions[roleId]
+}
+//网关发送消息到游戏逻辑服
+func (server *GateServer)SendMsgToGameServer(serverId int32,msgId int,msg proto.Message) error{
+	session := server.gameSessions[serverId]
+	if session == nil{
+		//说明不存在游戏逻辑服节点，还没有注册
+		log4g.Infof("未注册游戏逻辑服节点Id[%d]",serverId)
+		return NoGameSessionError
+	}else{
+		if err := session.WriteMsg(msgId,msg);err != nil{
+			return err
+		}
+	}
+	return nil
 }

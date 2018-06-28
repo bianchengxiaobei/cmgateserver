@@ -14,6 +14,8 @@ func (handler *RegisterGateHandler) Action(session network.SocketSessionInterfac
 	if protoMsg,ok := msg.(*message.M2G_RegisterGate);ok{
 		handler.GateServer.RegisterInnerGameServer(protoMsg.Id,session)
 		log4g.Infof("游戏服务器[%d]成功注册到网关服务器[%d]",protoMsg.Id,handler.GateServer.GetId())
+	}else{
+		log4g.Error("不是M2G_RegisterGate！")
 	}
 }
 

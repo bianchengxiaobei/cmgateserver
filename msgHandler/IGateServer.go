@@ -3,6 +3,7 @@ package msgHandler
 import (
 	"github.com/bianchengxiaobei/cmgo/network"
 	"cmgateserver/db"
+	"github.com/golang/protobuf/proto"
 )
 
 type IGateServer interface {
@@ -16,4 +17,5 @@ type IGateServer interface {
 	RegisterRoleSession(roleId int64,session network.SocketSessionInterface)
 	RemoveRoleSession(roleId int64)
 	GetRoleSession(roleId int64) (session network.SocketSessionInterface)
+	SendMsgToGameServer(serverId int32,msgId int,msg proto.Message) error
 }

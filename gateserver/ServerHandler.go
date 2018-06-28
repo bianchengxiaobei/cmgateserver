@@ -15,6 +15,7 @@ type ServerMessageHandler struct {
 
 func (handler ServerMessageHandler)Init() {
 	handler.pool.Register(1000,&msgHandler.UserLoginHandler{GateServer:handler.gateServer,})
+	handler.pool.Register(1002,&msgHandler.SelectCharacterHandler{GateServer:handler.gateServer})
 }
 
 func (handler ServerMessageHandler) MessageReceived(session network.SocketSessionInterface, message interface{}) error {

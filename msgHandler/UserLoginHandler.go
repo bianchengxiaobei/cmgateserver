@@ -7,6 +7,7 @@ import (
 	"cmgateserver/bean"
 	"gopkg.in/mgo.v2/bson"
 	"github.com/bianchengxiaobei/cmgo/tool"
+	"strconv"
 )
 
 type UserLoginHandler struct {
@@ -63,8 +64,37 @@ func (handler *UserLoginHandler) Action(session network.SocketSessionInterface,m
 					handler.GateServer.RemoveUserSession(oldUserId)
 				}
 			}
+			//关闭oldSession
+			oldSession.Close(0)
 		}
 		handler.GateServer.RegisterUserSession(user.ServerId,user.UserId,session)
+		session.SetAttribute(network.USERNAME,user.UserName)
+		session.SetAttribute(network.SERVERID,user.ServerId)
+		//查询数据库是否已经存在角色
+		role := bean.Role{}
+		c := dbSession.DB("sanguozhizhan").C("Role")
+		err = c.Find(bson.M{"userid":user.UserId}).One(&role)
+		if err == nil{
+			//说明游戏服务器还没有该玩家的角色，自动创建角色发送给客户端
+			if handler.idGen == nil{
+				handler.idGen,err = tool.NewGenerator(int64(handler.GateServer.GetId()))
+			}
+			role.RoleId = handler.idGen.GetId()
+			role.UserId = user.UserId
+			role.NickName = "Player_"+ strconv.Itoa(int(role.RoleId))
+			err = c.Insert(&user)
+			if err != nil{
+				log4g.Error("玩家角色账号插入数据库出错!")
+				return
+			}
+		}
+		msg := new(message.G2C_CharacterInfo)
+		if msg.Role == nil{
+			msg.Role = new(message.G2C_CharacterInfo_Role)
+		}
+		msg.Role.RoleId = role.RoleId
+		msg.Role.NickName = role.NickName
+		session.WriteMsg(1001,msg)
 		log4g.Infof("游戏玩家[%s]登录游戏服务器[%d]",protoMsg.UserName,protoMsg.GameServerId)
 	}
 }

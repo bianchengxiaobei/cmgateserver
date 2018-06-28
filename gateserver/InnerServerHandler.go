@@ -4,6 +4,7 @@ import (
 	"github.com/bianchengxiaobei/cmgo/network"
 	"errors"
 	"cmgateserver/msgHandler"
+	"github.com/bianchengxiaobei/cmgo/log4g"
 )
 type InnnerServerMessageHandler struct {
 	server network.ISocket
@@ -17,11 +18,13 @@ func (handler InnnerServerMessageHandler)Init() {
 
 
 func (handler InnnerServerMessageHandler) MessageReceived(session network.SocketSessionInterface, message interface{}) error {
+	log4g.Info("fefef")
 	if writeMsg,ok := message.(network.WriteMessage);!ok{
 		return errors.New("不是WriteMessage类型")
 	}else{
 		action := handler.pool.GetHandler(int32(writeMsg.MsgId))
 		if action == nil{
+			log4g.Errorf("找不到该Handler[%d]",writeMsg.MsgId)
 			return errors.New("找不到该Handler")
 		}else{
 			action.Action(session,writeMsg.MsgData)
