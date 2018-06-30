@@ -24,12 +24,9 @@ var messageHeaderLen = (int)(unsafe.Sizeof(MessageHeader{}))
 
 func (protocol ServerProtocol) Init() {
 	//注册消息
-	protocol.pool.Register(10000, reflect.TypeOf(message.M2G_RegisterGate{}))
-	protocol.pool.Register(10001,reflect.TypeOf(message.G2M_LoginToGameServer{}))
-
-	protocol.pool.Register(1000,reflect.TypeOf(message.C2G_UserLogin{}))
-	protocol.pool.Register(1001,reflect.TypeOf(message.G2C_CharacterInfo{}))
-	protocol.pool.Register(1002,reflect.TypeOf(message.C2G_SelectCharacter{}))
+	protocol.pool.Register(1000, reflect.TypeOf(message.C2G_UserLogin{}))
+	protocol.pool.Register(1001, reflect.TypeOf(message.G2C_CharacterInfo{}))
+	protocol.pool.Register(1002, reflect.TypeOf(message.C2G_SelectCharacter{}))
 }
 func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, data []byte) (interface{}, int, error) {
 	var (
@@ -61,7 +58,7 @@ func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, da
 		if msgHeader.OrderId == perOrder {
 			session.SetAttribute(network.PREORDERID, msgHeader.OrderId+1)
 		} else {
-			log4g.Errorf("发送消息序列出错[%d]",msgHeader.OrderId)
+			log4g.Errorf("发送消息序列出错[%d]", msgHeader.OrderId)
 			return nil, 0, nil
 		}
 	}
@@ -87,7 +84,6 @@ func (protocol ServerProtocol) Encode(session network.SocketSessionInterface, wr
 		protoMsg  proto.Message
 		data      []byte
 	)
-	log4g.Info("55")
 	msg, ok = writeMsg.(network.WriteMessage)
 	if ok == false {
 		panic("Message != WriteMsg")
@@ -107,7 +103,6 @@ func (protocol ServerProtocol) Encode(session network.SocketSessionInterface, wr
 		panic("ProtoMessage Marshal Error")
 	}
 	msgHeader.MsgBodyLen = int32(len(data))
-
 	ioBuffer = &bytes.Buffer{}
 	err = binary.Write(ioBuffer, binary.LittleEndian, msgHeader)
 	if err != nil {
@@ -115,7 +110,7 @@ func (protocol ServerProtocol) Encode(session network.SocketSessionInterface, wr
 	}
 	ioBuffer.Write(data)
 	err = session.WriteBytes(ioBuffer.Bytes())
-	if err != nil{
+	if err != nil {
 		log4g.Error(err.Error())
 	}
 	return nil

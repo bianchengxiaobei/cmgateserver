@@ -1,13 +1,13 @@
 package gui
 
 import (
+	"errors"
 	"fmt"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 	"github.com/lxn/win"
-	"errors"
-	"unsafe"
 	"syscall"
+	"unsafe"
 )
 
 const (
@@ -17,20 +17,21 @@ const (
 
 type GateWindow struct {
 	Win MainWindow
-	Tab           *walk.TabWidget
+	Tab *walk.TabWidget
 	//开启
 	ConnectButton *walk.PushButton
 	ConnectLabel  *walk.Label
 	//设置
-	SettingButton *walk.PushButton
-	SettingDialog *walk.Dialog
+	SettingButton       *walk.PushButton
+	SettingDialog       *walk.Dialog
 	SettingDialogSecond Dialog
 	//日志
-	logView				*LogView
+	logView *LogView
 }
 type LogView struct {
 	walk.WidgetBase
 }
+
 func (window *GateWindow) SetTitle(name string) {
 	window.Win.Title = name
 }
@@ -44,8 +45,7 @@ func (window *GateWindow) SetSize(width int, height int) {
 func (window *GateWindow) SetLayout(layout int) {
 	switch layout {
 	case VBoxLayout:
-		window.Win.Layout = VBox{
-		}
+		window.Win.Layout = VBox{}
 	case GridLayout:
 		window.Win.Layout = Grid{}
 	}
@@ -124,48 +124,49 @@ func (window *GateWindow) CreateConnectButton(content string, action walk.EventH
 	window.ConnectButton.Clicked().Attach(action)
 	return window.ConnectButton
 }
-func (window *GateWindow)CreateSettingButton(content string, action walk.EventHandler)  *walk.PushButton{
-	window.SettingButton = CreatePushButton(window.Tab.Pages().At(1),content,action)
+func (window *GateWindow) CreateSettingButton(content string, action walk.EventHandler) *walk.PushButton {
+	window.SettingButton = CreatePushButton(window.Tab.Pages().At(1), content, action)
 	return window.SettingButton
 }
-func (window *GateWindow)CreateSettingDialog(title string)  *walk.Dialog{
+func (window *GateWindow) CreateSettingDialog(title string) *walk.Dialog {
 	var err error
-	if window.SettingDialog,err = walk.NewDialog(*window.Win.AssignTo);err != nil{
+	if window.SettingDialog, err = walk.NewDialog(*window.Win.AssignTo); err != nil {
 		fmt.Println(err)
 		return nil
 	}
 	window.SettingDialog.SetTitle(title)
 	return window.SettingDialog
 }
-func CreateDialog(dialog *walk.Dialog) Dialog{
+func CreateDialog(dialog *walk.Dialog) Dialog {
 	return Dialog{
-		AssignTo:&dialog,
+		AssignTo: &dialog,
 	}
 }
-func CreatePushButton(parent walk.Container,content string, action walk.EventHandler)  *walk.PushButton{
-	if btn,err := walk.NewPushButton(parent);err != nil{
+func CreatePushButton(parent walk.Container, content string, action walk.EventHandler) *walk.PushButton {
+	if btn, err := walk.NewPushButton(parent); err != nil {
 		fmt.Println(err)
-	}else{
+	} else {
 		btn.SetText(content)
 		btn.Clicked().Attach(action)
 		return btn
 	}
 	return nil
 }
-func (window *GateWindow) CreateConnectLabel(connect string) *walk.Label{
+func (window *GateWindow) CreateConnectLabel(connect string) *walk.Label {
 	var err error
-	if window.ConnectLabel == nil{
-		if window.ConnectLabel,err = walk.NewLabel(window.Tab.Pages().At(0));err != nil{
+	if window.ConnectLabel == nil {
+		if window.ConnectLabel, err = walk.NewLabel(window.Tab.Pages().At(0)); err != nil {
 			fmt.Println(err)
 		}
 	}
 	window.ConnectLabel.SetText(connect)
 	//window.connectLabel.SetSize(walk.Size{500,400})
-	window.ConnectLabel.SetTextColor(walk.RGB(1,0,0))
+	window.ConnectLabel.SetTextColor(walk.RGB(1, 0, 0))
 	return window.ConnectLabel
 }
+
 //创建日志
-func (window *GateWindow) CreateLogView() (*LogView,error){
+func (window *GateWindow) CreateLogView() (*LogView, error) {
 	window.logView = &LogView{}
 	if err := walk.InitWidget(
 		window.logView,
@@ -179,12 +180,12 @@ func (window *GateWindow) CreateLogView() (*LogView,error){
 		return window.logView, errors.New("fail to call EM_SETREADONLY")
 	}
 	window.logView.SendMessage(win.EM_SETLIMITTEXT, 4294967295, 0)
-	return window.logView,nil
+	return window.logView, nil
 }
 func (lv *LogView) AppendLog(content string) {
 	txtLen := int(lv.SendMessage(0x000E, uintptr(0), uintptr(0)))
 	lv.SendMessage(win.EM_SETSEL, uintptr(txtLen), uintptr(txtLen))
-	point,_ := syscall.UTF16PtrFromString(content)
+	point, _ := syscall.UTF16PtrFromString(content)
 	lv.SendMessage(win.EM_REPLACESEL, 0, uintptr(unsafe.Pointer(point)))
 }
 func (lv *LogView) Write(p []byte) (int, error) {
@@ -204,7 +205,7 @@ func (window *GateWindow) Run() {
 	window.Win.Run()
 }
 func CreateGateWindow() GateWindow {
-	win,_ := walk.NewMainWindow()
+	win, _ := walk.NewMainWindow()
 	gateWin := GateWindow{
 		Win: MainWindow{},
 	}
@@ -239,7 +240,7 @@ func CreateCheckBox(name string, content string, checked bool) CheckBox {
 }
 func CreateLinkLabel(content string, action walk.LinkLabelLinkEventHandler) LinkLabel {
 	return LinkLabel{
-		Text:            content,
+		Text: content,
 		//MaxSize:         Size{300, 0},
 		OnLinkActivated: action,
 	}

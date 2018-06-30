@@ -2,17 +2,19 @@ package gateserver
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/bianchengxiaobei/cmgo/db"
+	"github.com/bianchengxiaobei/cmgo/log4g"
 	"github.com/bianchengxiaobei/cmgo/network"
+	"github.com/golang/protobuf/proto"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
-	"github.com/bianchengxiaobei/cmgo/log4g"
 	"sync"
-	"cmgateserver/db"
-	"github.com/golang/protobuf/proto"
-	"errors"
+	"cmgateserver/face"
+	"cmgateserver/roleManager"
 )
 
 type GateServer struct {
@@ -33,8 +35,9 @@ type GateServer struct {
 	gameSessions map[int32]network.SocketSessionInterface
 	//玩家游戏角色通信列表，存的是玩家角色和客户端的session
 	roleSessions map[int64]network.SocketSessionInterface
-	lock sync.Mutex
-	DBManger		*db.MongoBDManager
+	lock         sync.Mutex
+	DBManager    *db.MongoBDManager
+	RoleManager  face.IRoleManager
 }
 type GateServerConfig struct {
 	Name       string
@@ -44,11 +47,12 @@ type GateServerConfig struct {
 }
 
 var (
-	serverCodec   ServerProtocol             //服务器编解码
-	innerCodec    InnerProtocol              //内部服务器编解码
-	serverHandler ServerMessageHandler       //服务器消息处理器
-	innerHandler  InnnerServerMessageHandler //内部服务器消息处理器
-	NoGameSessionError	error = errors.New("没有逻辑服游戏Session节点")
+	serverCodec        ServerProtocol             //服务器编解码
+	innerCodec         InnerProtocol              //内部服务器编解码
+	serverHandler      ServerMessageHandler       //服务器消息处理器
+	innerHandler       InnnerServerMessageHandler //内部服务器消息处理器
+	NoGameSessionError error                      = errors.New("没有逻辑服游戏Session节点")
+	NoRoleSessionError error                      = errors.New("玩家还未登录到游戏服务器")
 )
 
 //初始化网关配置
@@ -72,14 +76,20 @@ func (server *GateServer) Init(gateBaseConfig string, gateConfig string, innerCo
 			messages: make(map[int32]reflect.Type),
 		},
 	}
+	innerCodec = InnerProtocol{
+		pool:&ProtoMessagePool{
+			messages:make(map[int32]reflect.Type),
+		},
+	}
 	serverCodec.Init()
+	innerCodec.Init()
 	server.UserClientServer.SetProtocolCodec(serverCodec)
-	server.InnerConnectServer.SetProtocolCodec(serverCodec)
+	server.InnerConnectServer.SetProtocolCodec(innerCodec)
 	//设置事件处理器
 	serverHandler = ServerMessageHandler{
 		server:     server.UserClientServer,
 		gateServer: server,
-		pool:&HandlerPool{
+		pool: &HandlerPool{
 			handlers: make(map[int32]HandlerBase),
 		},
 	}
@@ -87,15 +97,16 @@ func (server *GateServer) Init(gateBaseConfig string, gateConfig string, innerCo
 	innerHandler = InnnerServerMessageHandler{
 		server:     server.InnerConnectServer,
 		gateServer: server,
-		pool:&HandlerPool{
-			handlers:make(map[int32]HandlerBase),
+		pool: &HandlerPool{
+			handlers: make(map[int32]HandlerBase),
 		},
 	}
 	innerHandler.Init()
 	server.UserClientServer.SetMessageHandler(serverHandler)
 	server.InnerConnectServer.SetMessageHandler(innerHandler)
 	//BD
-	server.DBManger = db.NewMongoBD("127.0.0.1",5)
+	server.DBManager = db.NewMongoBD("127.0.0.1", 5)
+	server.RoleManager = roleManager.NewRoleManager(server)
 }
 func (server *GateServer) Run() {
 	defer func() {
@@ -109,12 +120,12 @@ func (server *GateServer) Run() {
 		//开始对玩家客户端的监听
 		if server.UserClientServer != nil {
 			server.UserClientServer.Bind(server.GateAddr)
-			log4g.Infof("%s[%s]开始运行!",server.Name,server.GateAddr)
+			log4g.Infof("%s[%s]开始运行!", server.Name, server.GateAddr)
 		}
 		//开始对内部逻辑服的监听
 		if server.InnerConnectServer != nil {
 			server.InnerConnectServer.Bind(server.InnerAddr)
-			log4g.Infof("%s内部监听开始运行!,端口:[%s]",server.Name,server.InnerAddr)
+			log4g.Infof("%s内部监听开始运行!,端口:[%s]", server.Name, server.InnerAddr)
 		}
 		server.IsRunning = true
 	}
@@ -131,7 +142,7 @@ func NewGateServer() *GateServer {
 		IsRunning:    false,
 		userSessions: make(map[int64]network.SocketSessionInterface),
 		gameSessions: make(map[int32]network.SocketSessionInterface),
-		roleSessions:make(map[int64]network.SocketSessionInterface),
+		roleSessions: make(map[int64]network.SocketSessionInterface),
 	}
 	return server
 }
@@ -210,7 +221,7 @@ func (server *GateServer) LoadSessionConfig(filePath string) {
 			fmt.Println(err)
 		}
 	}
-	if data == nil || len(data) == 0{
+	if data == nil || len(data) == 0 {
 		file, err = os.Open(filePath)
 		if err != nil {
 			panic(err)
@@ -220,7 +231,7 @@ func (server *GateServer) LoadSessionConfig(filePath string) {
 			panic(err)
 		}
 	}
-	if config == nil{
+	if config == nil {
 		config = new(GateServerConfig)
 	}
 	err = json.Unmarshal(data, config)
@@ -232,83 +243,140 @@ func (server *GateServer) LoadSessionConfig(filePath string) {
 	server.GateAddr = config.SocketAddr
 	server.InnerAddr = config.InnerAddr
 }
+
 //网关注册内部游戏服务器
-func (server *GateServer)RegisterInnerGameServer(serverId int32,session network.SocketSessionInterface){
-	session.SetAttribute(network.SERVERID,serverId)
+func (server *GateServer) RegisterInnerGameServer(serverId int32, session network.SocketSessionInterface) {
+	session.SetAttribute(network.SERVERID, serverId)
 	defer server.lock.Unlock()
 	server.lock.Lock()
-	_,ok :=server.gameSessions[serverId]
-	if ok{
-		log4g.Errorf("GameSession[%d]已经存在!",serverId)
-	}else{
+	_, ok := server.gameSessions[serverId]
+	if ok {
+		log4g.Errorf("GameSession[%d]已经存在!", serverId)
+	} else {
 		server.gameSessions[serverId] = session
-		log4g.Infof("网关注册游戏服务器id:%d",serverId)
+		log4g.Infof("网关注册游戏服务器id:%d", serverId)
 	}
 }
+
 //网关移除内部游戏服务器
-func (server *GateServer)RemoveInnerGameServer(serverId int32,session network.SocketSessionInterface){
+func (server *GateServer) RemoveInnerGameServer(serverId int32, session network.SocketSessionInterface) {
 	server.lock.Lock()
-	defer  server.lock.Unlock()
-	_,ok := server.gameSessions[serverId]
-	if !ok{
-		log4g.Errorf("GameSession[%d]不存在，移除失败！",serverId)
-	}else{
+	defer server.lock.Unlock()
+	_, ok := server.gameSessions[serverId]
+	if !ok {
+		log4g.Errorf("GameSession[%d]不存在，移除失败！", serverId)
+	} else {
 		delete(server.gameSessions, serverId)
-		log4g.Infof("网关移除游戏服务器id:%d",serverId)
+		log4g.Infof("网关移除游戏服务器id:%d", serverId)
 	}
 }
-func (server *GateServer)GetId() int{
+func (server *GateServer) GetId() int {
 	return server.Id
 }
-func (server *GateServer)GetDBManager() *db.MongoBDManager{
-	return server.DBManger
+func (server *GateServer) GetDBManager() *db.MongoBDManager {
+	return server.DBManager
+}
+func(server *GateServer)GetRoleManager() face.IRoleManager{
+	return server.RoleManager
 }
 //注册玩家通信
-func (server *GateServer)RegisterUserSession(serverId int32,userId int64,session network.SocketSessionInterface){
+func (server *GateServer) RegisterUserSession(serverId int32, userId int64, session network.SocketSessionInterface) {
 	server.lock.Lock()
-	defer  server.lock.Unlock()
+	defer server.lock.Unlock()
 	server.userSessions[userId] = session
-	session.SetAttribute(network.USERID,userId)
-	session.SetAttribute(network.SERVERID,serverId)
+	session.SetAttribute(network.USERID, userId)
+	session.SetAttribute(network.SERVERID, serverId)
 }
+
 //移除玩家通信
-func (server *GateServer)RemoveUserSession(userId int64){
+func (server *GateServer) RemoveUserSession(userId int64) {
 	server.lock.Lock()
 	defer server.lock.Unlock()
 	delete(server.userSessions, userId)
 }
+
 //取得玩家通信
-func (server *GateServer)GetUserSession(userId int64) (session network.SocketSessionInterface){
+func (server *GateServer) GetUserSession(userId int64) (session network.SocketSessionInterface) {
 	return server.userSessions[userId]
 }
+
 //注册玩家角色通信
-func (server *GateServer)RegisterRoleSession(roleId int64,session network.SocketSessionInterface){
+func (server *GateServer) RegisterRoleSession(roleId int64, session network.SocketSessionInterface) {
 	server.lock.Lock()
-	defer  server.lock.Unlock()
+	defer server.lock.Unlock()
 	server.roleSessions[roleId] = session
 	session.SetAttribute(network.ROLEID, roleId)
 }
+
 //移除玩家角色通信
-func (server *GateServer)RemoveRoleSession(roleId int64){
+func (server *GateServer) RemoveRoleSession(roleId int64) {
 	server.lock.Lock()
 	defer server.lock.Unlock()
 	delete(server.roleSessions, roleId)
 }
+
 //取得玩家角色通信
-func (server *GateServer)GetRoleSession(roleId int64) (session network.SocketSessionInterface){
+func (server *GateServer) GetRoleSession(roleId int64) (session network.SocketSessionInterface) {
 	return server.roleSessions[roleId]
 }
+
 //网关发送消息到游戏逻辑服
-func (server *GateServer)SendMsgToGameServer(serverId int32,msgId int,msg proto.Message) error{
+func (server *GateServer) SendMsgToGameServer(serverId int32, msgId int, msg proto.Message) error {
 	session := server.gameSessions[serverId]
-	if session == nil{
+	if session == nil {
 		//说明不存在游戏逻辑服节点，还没有注册
-		log4g.Infof("未注册游戏逻辑服节点Id[%d]",serverId)
+		log4g.Infof("未注册游戏逻辑服节点Id[%d]", serverId)
 		return NoGameSessionError
-	}else{
-		if err := session.WriteMsg(msgId,msg);err != nil{
+	} else {
+		innerMsg := network.InnerWriteMessage{
+			RoleId:  0,
+			MsgData: msg,
+		}
+		if err := session.WriteMsg(msgId, innerMsg); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+func (server *GateServer) SendMsgToGameServerByRoleId(roleId int64, msgId int, msg proto.Message) error {
+	onlineRole := server.RoleManager.GetOnlineRole(roleId)
+	if onlineRole != nil {
+		session := server.gameSessions[onlineRole.GetServerId()]
+		if session == nil {
+			//说明不存在游戏逻辑服节点，还没有注册
+			log4g.Infof("未注册游戏逻辑服节点Id[%d]", onlineRole.GetServerId())
+			return NoGameSessionError
+		} else {
+			innerMsg := network.InnerWriteMessage{
+				RoleId:  roleId,
+				MsgData: msg,
+			}
+			if err := session.WriteMsg(msgId, innerMsg); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	return NoRoleSessionError
+}
+
+//网关转发消息到玩家客户端
+func (server *GateServer) SendMsgToClientByRoleId(roleId int64, msgId int, msg interface{}) error {
+	session := server.roleSessions[roleId]
+	if session == nil {
+		log4g.Infof("玩家[%d]还未登录到游戏服务器!", roleId)
+		return nil
+	} else {
+		fmt.Println("rerere343")
+		if err := session.WriteMsg(msgId, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+//网关发送消息给玩家客户端
+func (server *GateServer) SendMsgToClient(session network.SocketSessionInterface, msgId int, msg interface{}) error {
+	err := session.WriteMsg(msgId, msg)
+	return err
 }
