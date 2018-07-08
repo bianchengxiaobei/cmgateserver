@@ -66,7 +66,7 @@ func StartOrCloseGate() {
 		window.ConnectButton.SetText("停止")
 		window.ConnectLabel.SetText("网关已经启动!")
 	} else {
-		server.Close()
+		//server.Close()
 		window.ConnectButton.SetText("开启")
 		window.ConnectLabel.SetText("网关未开启!")
 	}

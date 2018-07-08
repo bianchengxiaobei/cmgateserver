@@ -31,22 +31,35 @@ func (protocol InnerProtocol) Init() {
 
 	//直接发给客户端消息
 	protocol.pool.Register(5000,reflect.TypeOf(message.M2C_EnterLobby{}))
+	protocol.pool.Register(5001,reflect.TypeOf(message.C2M_ReqRefreshRoomList{}))
+	protocol.pool.Register(5002,reflect.TypeOf(message.M2C_RefreshRoomList{}))
+	protocol.pool.Register(5003,reflect.TypeOf(message.C2M_CreateRoom{}))
+	protocol.pool.Register(5004,reflect.TypeOf(message.M2C_JoinRoom{}))
+	protocol.pool.Register(5005,reflect.TypeOf(message.C2M_ReqJoinRoom{}))
+	protocol.pool.Register(5006,reflect.TypeOf(message.C2M_ReqReady{}))
+	protocol.pool.Register(5007,reflect.TypeOf(message.M2C_ReadySuccess{}))
+	protocol.pool.Register(5008,reflect.TypeOf(message.C2M_StartBattle{}))
+	protocol.pool.Register(5009,reflect.TypeOf(message.M2C_StartBattleLoad{}))
+	protocol.pool.Register(5010,reflect.TypeOf(message.C2M_LoadFinished{}))
+	protocol.pool.Register(5011,reflect.TypeOf(message.M2C_StartBattle{}))
+	protocol.pool.Register(5012,reflect.TypeOf(message.M2C_BattleFrame{}))
+	protocol.pool.Register(5013,reflect.TypeOf(message.C2M_Command{}))
 }
 
 func (protocol InnerProtocol) Decode(session network.SocketSessionInterface, data []byte) (interface{}, int, error) {
 	var (
 		err       error
 		ioBuffer  *bytes.Buffer
-		msgHeader InnerMessageHeader
+		msgHeader *InnerMessageHeader
 		chanMsg   network.WriteMessage
 		innerMsg  network.InnerWriteMessage
 	)
-	msgHeader = InnerMessageHeader{}
+	msgHeader = new(InnerMessageHeader)
 	ioBuffer = bytes.NewBuffer(data)
 	if ioBuffer.Len() < InnerMessageHeaderLen {
 		return nil, 0, nil
 	}
-	err = binary.Read(ioBuffer, binary.LittleEndian, &msgHeader)
+	err = binary.Read(ioBuffer, binary.LittleEndian, msgHeader)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -54,7 +67,6 @@ func (protocol InnerProtocol) Decode(session network.SocketSessionInterface, dat
 		return nil, 0, nil
 	}
 	allLen := int(msgHeader.MsgBodyLen) + InnerMessageHeaderLen
-
 	var msgType = protocol.pool.GetMessageType(msgHeader.MessageId)
 	if msgType == nil{
 		fmt.Printf("MsgId:%d",msgHeader.MessageId)

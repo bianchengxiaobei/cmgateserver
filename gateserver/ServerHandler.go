@@ -24,7 +24,7 @@ func (handler ServerMessageHandler) MessageReceived(session network.SocketSessio
 	if writeMsg, ok := message.(network.WriteMessage); !ok {
 		return errors.New("不是WriteMessage类型")
 	} else {
-		//log4g.Infof("收到消息%d",writeMsg.MsgId)
+		log4g.Infof("收到消息%d",writeMsg.MsgId)
 		msgHandler := handler.pool.GetHandler(int32(writeMsg.MsgId))
 		if msgHandler == nil {
 			//说明是直接发给游戏服务器的

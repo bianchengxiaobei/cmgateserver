@@ -4,7 +4,7 @@ import (
 	"cmgateserver/msgHandler"
 	"errors"
 	"github.com/bianchengxiaobei/cmgo/network"
-	"fmt"
+	"github.com/bianchengxiaobei/cmgo/log4g"
 )
 
 type InnnerServerMessageHandler struct {
@@ -15,7 +15,7 @@ type InnnerServerMessageHandler struct {
 
 func (handler InnnerServerMessageHandler) Init() {
 	handler.pool.Register(10000, &msgHandler.RegisterGateHandler{GateServer: handler.gateServer})
-	handler.pool.Register(10002,&msgHandler.LoginSuccessHandler{GateServer:handler.gateServer})
+	handler.pool.Register(10002, &msgHandler.LoginSuccessHandler{GateServer: handler.gateServer})
 }
 
 func (handler InnnerServerMessageHandler) MessageReceived(session network.SocketSessionInterface, message interface{}) error {
@@ -27,12 +27,12 @@ func (handler InnnerServerMessageHandler) MessageReceived(session network.Socket
 			//log4g.Errorf("找不到该Handler[%d]", writeMsg.MsgId)
 			//return errors.New("找不到该Handler")
 			//如果找不到handler说明是直接发给客户端的
-			fmt.Println("jhjjffd")
 			if innerMsg, ok := writeMsg.MsgData.(network.InnerWriteMessage); ok {
 				if innerMsg.RoleId > 0 {
 					//网关找到玩家session直接转发
-					fmt.Println("jhjjffd")
 					handler.gateServer.SendMsgToClientByRoleId(innerMsg.RoleId, writeMsg.MsgId, innerMsg.MsgData)
+				}else{
+					log4g.Infof("RoleId == 0,MsgId:[%d]",writeMsg.MsgId)
 				}
 			}
 		} else {

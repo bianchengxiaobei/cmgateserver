@@ -367,7 +367,6 @@ func (server *GateServer) SendMsgToClientByRoleId(roleId int64, msgId int, msg i
 		log4g.Infof("玩家[%d]还未登录到游戏服务器!", roleId)
 		return nil
 	} else {
-		fmt.Println("rerere343")
 		if err := session.WriteMsg(msgId, msg); err != nil {
 			return err
 		}

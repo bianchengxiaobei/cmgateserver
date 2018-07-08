@@ -27,6 +27,14 @@ func (protocol ServerProtocol) Init() {
 	protocol.pool.Register(1000, reflect.TypeOf(message.C2G_UserLogin{}))
 	protocol.pool.Register(1001, reflect.TypeOf(message.G2C_CharacterInfo{}))
 	protocol.pool.Register(1002, reflect.TypeOf(message.C2G_SelectCharacter{}))
+
+	protocol.pool.Register(5001,reflect.TypeOf(message.C2M_ReqRefreshRoomList{}))
+	protocol.pool.Register(5003,reflect.TypeOf(message.C2M_CreateRoom{}))
+	protocol.pool.Register(5005,reflect.TypeOf(message.C2M_ReqJoinRoom{}))
+	protocol.pool.Register(5006,reflect.TypeOf(message.C2M_ReqReady{}))
+	protocol.pool.Register(5008,reflect.TypeOf(message.C2M_StartBattle{}))
+	protocol.pool.Register(5010,reflect.TypeOf(message.C2M_LoadFinished{}))
+	protocol.pool.Register(5013,reflect.TypeOf(message.C2M_Command{}))
 }
 func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, data []byte) (interface{}, int, error) {
 	var (
@@ -47,6 +55,7 @@ func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, da
 	if ioBuffer.Len() < int(msgHeader.MsgBodyLen) {
 		return nil, 0, nil
 	}
+
 	allLen := int(msgHeader.MsgBodyLen) + messageHeaderLen
 	var perOrder = session.GetAttribute(network.PREORDERID)
 	if perOrder == nil {
