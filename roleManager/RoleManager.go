@@ -6,6 +6,7 @@ import (
 	"sync"
 	"github.com/bianchengxiaobei/cmgo/network"
 	"cmgateserver/face"
+	"cmgateserver/message"
 )
 
 type RoleManager struct {
@@ -74,6 +75,16 @@ func (manager *RoleManager)RegisterRole(serverId int32,userId int64,roleId int64
 		}
 	}
 }
-func (manager *RoleManager)QuitRole(onlineRole face.IOnlineRole){
-
+func (manager *RoleManager)QuitRole(roleId int64,serverId int32){
+	role := manager.GetOnlineRole(roleId)
+	if role != nil{
+		serverId := role.GetServerId()
+		msg := new(message.G2M_RoleQuitGameServer)
+		msg.RoleId = roleId
+		manager.GateServer.SendMsgToGameServer(serverId, 10004, msg)
+	}else{
+		msg := new(message.G2M_RoleQuitGameServer)
+		msg.RoleId = roleId
+		manager.GateServer.SendMsgToGameServer(serverId, 10004, msg)
+	}
 }

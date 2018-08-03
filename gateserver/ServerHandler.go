@@ -17,6 +17,8 @@ type ServerMessageHandler struct {
 func (handler ServerMessageHandler) Init() {
 	handler.pool.Register(1000, &msgHandler.UserLoginHandler{GateServer: handler.gateServer})
 	handler.pool.Register(1002, &msgHandler.SelectCharacterHandler{GateServer: handler.gateServer})
+	handler.pool.Register(1003,&msgHandler.ChangeNickNameHandler{GateServer:handler.gateServer})
+	handler.pool.Register(1004,&msgHandler.ChangeAvatarIdHandler{GateServer:handler.gateServer})
 }
 
 func (handler ServerMessageHandler) MessageReceived(session network.SocketSessionInterface, message interface{}) error {
@@ -51,7 +53,34 @@ func (handler ServerMessageHandler) SessionOpened(session network.SocketSessionI
 }
 
 func (handler ServerMessageHandler) SessionClosed(session network.SocketSessionInterface) {
-	log4g.Infof("Session[%d]关闭!", session.Id())
+	//客户端断开连接
+	//通知游戏服务器断开连接
+	defer func() {
+		if err := recover();err != nil{
+			log4g.Info(err.(error).Error())
+		}
+	}()
+	quit := false
+	roleId := session.GetAttribute(network.ROLEID)
+	userId := session.GetAttribute(network.USERID)
+	if roleId != nil{
+		id := roleId.(int64)
+		role := handler.gateServer.RoleManager.GetOnlineRole(id)
+		if role != nil{
+			handler.gateServer.RoleManager.QuitRole(id,-100)
+			quit = true
+			handler.gateServer.RemoveRoleSession(id)
+		}
+	}
+	if userId != nil{
+		id := userId.(int64)
+		serverId := session.GetAttribute(network.SERVERID).(int32)
+		handler.gateServer.RemoveUserSession(id)
+		if quit == false{
+			handler.gateServer.RoleManager.QuitRole(-1000,serverId)
+		}
+	}
+	log4g.Infof("Session[%d]关闭!角色[%d]退出网关!", session.Id(),roleId.(int64))
 }
 
 func (handler ServerMessageHandler) SessionPeriod(session network.SocketSessionInterface) {

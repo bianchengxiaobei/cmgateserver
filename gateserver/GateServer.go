@@ -116,15 +116,26 @@ func (server *GateServer) Run() {
 			return
 		}
 	}()
+	var (
+		err 		error
+	)
 	if server.IsRunning == false {
 		//开始对玩家客户端的监听
 		if server.UserClientServer != nil {
-			server.UserClientServer.Bind(server.GateAddr)
+			err = server.UserClientServer.Bind(server.GateAddr)
+			if err != nil{
+				log4g.Error(err.Error())
+				return
+			}
 			log4g.Infof("%s[%s]开始运行!", server.Name, server.GateAddr)
 		}
 		//开始对内部逻辑服的监听
 		if server.InnerConnectServer != nil {
-			server.InnerConnectServer.Bind(server.InnerAddr)
+			err = server.InnerConnectServer.Bind(server.InnerAddr)
+			if err != nil{
+				log4g.Error(err.Error())
+				return
+			}
 			log4g.Infof("%s内部监听开始运行!,端口:[%s]", server.Name, server.InnerAddr)
 		}
 		server.IsRunning = true
@@ -166,8 +177,9 @@ func LoadSessionConfig(filePath string, sessionConfig *network.SocketSessionConf
 			TcpKeepAlivePeriod: 3e9,
 			TcpReadBuffSize:    1024,
 			TcpWriteBuffSize:   1024,
-			ReadChanLen:        1,
-			WriteChanLen:       1,
+			ReadChanLen:        1024,
+			WriteChanLen:       1024,
+			PeriodTime:5e9,
 		}
 		data, err = json.Marshal(config)
 		if _, err = file.Write(data); err != nil {

@@ -27,6 +27,8 @@ func (protocol ServerProtocol) Init() {
 	protocol.pool.Register(1000, reflect.TypeOf(message.C2G_UserLogin{}))
 	protocol.pool.Register(1001, reflect.TypeOf(message.G2C_CharacterInfo{}))
 	protocol.pool.Register(1002, reflect.TypeOf(message.C2G_SelectCharacter{}))
+	protocol.pool.Register(1003,reflect.TypeOf(message.C2G_ChangeNickName{}))
+	protocol.pool.Register(1004,reflect.TypeOf(message.C2G_ChangeAvatarIcon{}))
 
 	protocol.pool.Register(5001,reflect.TypeOf(message.C2M_ReqRefreshRoomList{}))
 	protocol.pool.Register(5003,reflect.TypeOf(message.C2M_CreateRoom{}))
@@ -55,8 +57,8 @@ func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, da
 	if ioBuffer.Len() < int(msgHeader.MsgBodyLen) {
 		return nil, 0, nil
 	}
-
-	allLen := int(msgHeader.MsgBodyLen) + messageHeaderLen
+	bodyLen := int(msgHeader.MsgBodyLen)
+	allLen := bodyLen + messageHeaderLen
 	var perOrder = session.GetAttribute(network.PREORDERID)
 	if perOrder == nil {
 		session.SetAttribute(network.PREORDERID, msgHeader.OrderId+1)
@@ -73,7 +75,8 @@ func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, da
 	}
 	var msgType = protocol.pool.GetMessageType(msgHeader.MessageId)
 	msg := reflect.New(msgType).Interface()
-	err = proto.Unmarshal(ioBuffer.Bytes(), msg.(proto.Message))
+	bodyBytes := ioBuffer.Next(bodyLen)
+	err = proto.Unmarshal(bodyBytes, msg.(proto.Message))
 	if err != nil {
 		log4g.Error(err.Error())
 	}
@@ -93,9 +96,12 @@ func (protocol ServerProtocol) Encode(session network.SocketSessionInterface, wr
 		protoMsg  proto.Message
 		data      []byte
 	)
+	defer func() {
+
+	}()
 	msg, ok = writeMsg.(network.WriteMessage)
 	if ok == false {
-		panic("Message != WriteMsg")
+		return NotWriteMessage
 	}
 
 	msgHeader = MessageHeader{}
@@ -105,11 +111,11 @@ func (protocol ServerProtocol) Encode(session network.SocketSessionInterface, wr
 
 	protoMsg, ok = msg.MsgData.(proto.Message)
 	if ok == false {
-		panic("Msg != ProtoMessage")
+		return NotProtoMessage
 	}
 	data, err = proto.Marshal(protoMsg)
 	if err != nil {
-		panic("ProtoMessage Marshal Error")
+		return err
 	}
 	msgHeader.MsgBodyLen = int32(len(data))
 	ioBuffer = &bytes.Buffer{}
@@ -117,10 +123,13 @@ func (protocol ServerProtocol) Encode(session network.SocketSessionInterface, wr
 	if err != nil {
 		return err
 	}
-	ioBuffer.Write(data)
+	_,err = ioBuffer.Write(data)
+	if err != nil {
+		return err
+	}
 	err = session.WriteBytes(ioBuffer.Bytes())
 	if err != nil {
-		log4g.Error(err.Error())
+		return err
 	}
 	return nil
 }

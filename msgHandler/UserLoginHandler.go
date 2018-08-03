@@ -84,6 +84,11 @@ func (handler *UserLoginHandler) Action(session network.SocketSessionInterface, 
 			role.UserId = user.UserId
 			role.NickName = "Player_" + strconv.Itoa(int(role.RoleId))
 			role.ServerId = user.ServerId
+			role.Level = 1
+			role.Exp = 0
+			role.Gold = 1000
+			role.Diam = 100
+			role.AvatarId = 1
 			err = c.Insert(&role)
 			if err != nil {
 				log4g.Error("玩家角色账号插入数据库出错!")
@@ -92,10 +97,15 @@ func (handler *UserLoginHandler) Action(session network.SocketSessionInterface, 
 		}
 		msg := new(message.G2C_CharacterInfo)
 		if msg.Role == nil {
-			msg.Role = new(message.G2C_CharacterInfo_Role)
+			msg.Role = new(message.Role)
 		}
 		msg.Role.RoleId = role.RoleId
 		msg.Role.NickName = role.NickName
+		msg.Role.AvatarId = role.AvatarId
+		msg.Role.Level = role.Level
+		msg.Role.Diam = role.Diam
+		msg.Role.Gold = role.Gold
+		msg.Role.Exp = role.Exp
 		handler.GateServer.SendMsgToClient(session, 1001, msg)
 		log4g.Infof("游戏玩家[%s]登录游戏服务器[%d]", protoMsg.UserName, protoMsg.GameServerId)
 	}

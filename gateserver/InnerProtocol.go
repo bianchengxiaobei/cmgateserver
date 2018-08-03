@@ -9,7 +9,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"reflect"
 	"unsafe"
-	"fmt"
+	"errors"
 )
 
 type InnerProtocol struct {
@@ -22,12 +22,17 @@ type InnerMessageHeader struct {
 }
 
 var InnerMessageHeaderLen = (int)(unsafe.Sizeof(InnerMessageHeader{}))
-
+var NotWriteMessage = errors.New("Message != WriteMsg")
+var NotInnerMessage = errors.New("Message != InnerMsg")
+var NotProtoMessage = errors.New("Message != ProtoMsg")
+var CantFindMsgType = errors.New("找不到该消息类型")
 func (protocol InnerProtocol) Init() {
 	//注册消息
 	protocol.pool.Register(10000, reflect.TypeOf(message.M2G_RegisterGate{}))
-	protocol.pool.Register(10001, reflect.TypeOf(message.G2M_LoginToGameServer{}))
+	//protocol.pool.Register(10001, reflect.TypeOf(message.G2M_LoginToGameServer{}))
 	protocol.pool.Register(10002,reflect.TypeOf(message.M2G_LoginSuccessNotifyGate{}))
+	//protocol.pool.Register(10003,reflect.TypeOf(message.G2M_RoleRegisterToGateSuccess{}))
+	//protocol.pool.Register(10004,reflect.TypeOf(message.G2M_RoleQuitGameServer{}))
 
 	//直接发给客户端消息
 	protocol.pool.Register(5000,reflect.TypeOf(message.M2C_EnterLobby{}))
@@ -44,6 +49,9 @@ func (protocol InnerProtocol) Init() {
 	protocol.pool.Register(5011,reflect.TypeOf(message.M2C_StartBattle{}))
 	protocol.pool.Register(5012,reflect.TypeOf(message.M2C_BattleFrame{}))
 	protocol.pool.Register(5013,reflect.TypeOf(message.C2M_Command{}))
+	protocol.pool.Register(5014,reflect.TypeOf(message.M2C_GamePing{}))
+	protocol.pool.Register(5015,reflect.TypeOf(message.M2C_RoomDelete{}))
+	protocol.pool.Register(5016,reflect.TypeOf(message.M2C_RoleQuitRoom{}))
 }
 
 func (protocol InnerProtocol) Decode(session network.SocketSessionInterface, data []byte) (interface{}, int, error) {
@@ -66,14 +74,17 @@ func (protocol InnerProtocol) Decode(session network.SocketSessionInterface, dat
 	if ioBuffer.Len() < int(msgHeader.MsgBodyLen) {
 		return nil, 0, nil
 	}
-	allLen := int(msgHeader.MsgBodyLen) + InnerMessageHeaderLen
+	bodyLen := int(msgHeader.MsgBodyLen)
+	allLen := bodyLen + InnerMessageHeaderLen
 	var msgType = protocol.pool.GetMessageType(msgHeader.MessageId)
 	if msgType == nil{
-		fmt.Printf("MsgId:%d",msgHeader.MessageId)
+		log4g.Infof("找不到MsgId:%d",msgHeader.MessageId)
+		return nil, allLen, CantFindMsgType
 	}
 
 	msg := reflect.New(msgType).Interface()
-	err = proto.Unmarshal(ioBuffer.Bytes(), msg.(proto.Message))
+	bodyBytes := ioBuffer.Next(bodyLen)
+	err = proto.Unmarshal(bodyBytes, msg.(proto.Message))
 	if err != nil {
 		log4g.Error(err.Error())
 	}
@@ -100,11 +111,10 @@ func (protocol InnerProtocol) Encode(session network.SocketSessionInterface, wri
 	)
 	msg, ok = writeMsg.(network.WriteMessage)
 	if ok == false {
-		panic("Message != WriteMsg")
+		return NotWriteMessage
 	}
 	if innerMsg, ok = msg.MsgData.(network.InnerWriteMessage); !ok {
-		panic("Message != InnerMsg")
-		return nil
+		return NotInnerMessage
 	}
 	msgHeader = InnerMessageHeader{}
 	msgHeader.MessageId = int32(msg.MsgId)
@@ -113,11 +123,11 @@ func (protocol InnerProtocol) Encode(session network.SocketSessionInterface, wri
 
 	protoMsg, ok = innerMsg.MsgData.(proto.Message)
 	if ok == false {
-		panic("Msg != ProtoMessage")
+		return NotProtoMessage
 	}
 	data, err = proto.Marshal(protoMsg)
 	if err != nil {
-		panic("ProtoMessage Marshal Error")
+		return err
 	}
 	msgHeader.MsgBodyLen = int32(len(data))
 	ioBuffer = &bytes.Buffer{}
@@ -125,10 +135,13 @@ func (protocol InnerProtocol) Encode(session network.SocketSessionInterface, wri
 	if err != nil {
 		return err
 	}
-	ioBuffer.Write(data)
+	_,err = ioBuffer.Write(data)
+	if err != nil {
+		return err
+	}
 	err = session.WriteBytes(ioBuffer.Bytes())
 	if err != nil {
-		log4g.Error(err.Error())
+		return err
 	}
 	return nil
 }

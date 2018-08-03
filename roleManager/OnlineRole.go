@@ -39,4 +39,16 @@ func (role *OnlineRole)SetUseName(name string) {
 func (role *OnlineRole)SetGateId(gateId int32) {
 	role.GateId = gateId
 }
+func (role *OnlineRole)GetAvatarId() int32{
+	return role.Role.AvatarId
+}
+func (role *OnlineRole)SetAvatarId(avatarId int32){
+	role.Role.AvatarId = avatarId
+}
+func (role *OnlineRole)GetNickName()string{
+	return role.Role.NickName
+}
+func (role *OnlineRole)SetNickName(nickName string){
+	role.Role.NickName = nickName
+}
 

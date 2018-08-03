@@ -11,4 +11,8 @@ type IOnlineRole interface {
 	SetUserId(int64)
 	SetUseName(string)
 	SetGateId(int32)
+	GetAvatarId() int32
+	SetAvatarId(avatarId int32)
+	GetNickName()string
+	SetNickName(nickName string)
 }
