@@ -18,26 +18,45 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
+type C2M2C_ChangeEquipItemPos_HeroToBagType int32
+
+const (
+	C2M2C_ChangeEquipItemPos_HeroToBag C2M2C_ChangeEquipItemPos_HeroToBagType = 0
+	C2M2C_ChangeEquipItemPos_BagToHero C2M2C_ChangeEquipItemPos_HeroToBagType = 1
+	C2M2C_ChangeEquipItemPos_BagToBag  C2M2C_ChangeEquipItemPos_HeroToBagType = 2
+)
+
+var C2M2C_ChangeEquipItemPos_HeroToBagType_name = map[int32]string{
+	0: "HeroToBag",
+	1: "BagToHero",
+	2: "BagToBag",
+}
+var C2M2C_ChangeEquipItemPos_HeroToBagType_value = map[string]int32{
+	"HeroToBag": 0,
+	"BagToHero": 1,
+	"BagToBag":  2,
+}
+
+func (x C2M2C_ChangeEquipItemPos_HeroToBagType) String() string {
+	return proto.EnumName(C2M2C_ChangeEquipItemPos_HeroToBagType_name, int32(x))
+}
+func (C2M2C_ChangeEquipItemPos_HeroToBagType) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{16, 0}
+}
+
 type Room struct {
-	GameType             int32    `protobuf:"varint,1,opt,name=gameType,proto3" json:"gameType,omitempty"`
-	RoomName             string   `protobuf:"bytes,2,opt,name=roomName,proto3" json:"roomName,omitempty"`
-	MaxPlayerNum         int32    `protobuf:"varint,3,opt,name=maxPlayerNum,proto3" json:"maxPlayerNum,omitempty"`
-	MapId                int32    `protobuf:"varint,4,opt,name=mapId,proto3" json:"mapId,omitempty"`
-	RoomOwnerName        string   `protobuf:"bytes,5,opt,name=roomOwnerName,proto3" json:"roomOwnerName,omitempty"`
-	RoomOwnerId          int64    `protobuf:"varint,6,opt,name=roomOwnerId,proto3" json:"roomOwnerId,omitempty"`
-	RoomId               int32    `protobuf:"varint,7,opt,name=roomId,proto3" json:"roomId,omitempty"`
-	CurPlayeNum          int32    `protobuf:"varint,8,opt,name=curPlayeNum,proto3" json:"curPlayeNum,omitempty"`
-	RoomOwnerGroupId     int32    `protobuf:"varint,9,opt,name=roomOwnerGroupId,proto3" json:"roomOwnerGroupId,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Owner                *RoomOwner    `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	Members              []*RoomMember `protobuf:"bytes,2,rep,name=members,proto3" json:"members,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
 }
 
 func (m *Room) Reset()         { *m = Room{} }
 func (m *Room) String() string { return proto.CompactTextString(m) }
 func (*Room) ProtoMessage()    {}
 func (*Room) Descriptor() ([]byte, []int) {
-	return fileDescriptor_C2M_92d5198a279382cf, []int{0}
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{0}
 }
 func (m *Room) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Room.Unmarshal(m, b)
@@ -57,65 +76,228 @@ func (m *Room) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Room proto.InternalMessageInfo
 
-func (m *Room) GetGameType() int32 {
+func (m *Room) GetOwner() *RoomOwner {
+	if m != nil {
+		return m.Owner
+	}
+	return nil
+}
+
+func (m *Room) GetMembers() []*RoomMember {
+	if m != nil {
+		return m.Members
+	}
+	return nil
+}
+
+type RoomMember struct {
+	JoinerId             int64    `protobuf:"varint,1,opt,name=joinerId,proto3" json:"joinerId,omitempty"`
+	JoinerName           string   `protobuf:"bytes,2,opt,name=joinerName,proto3" json:"joinerName,omitempty"`
+	JoinerIconId         int32    `protobuf:"varint,3,opt,name=joinerIconId,proto3" json:"joinerIconId,omitempty"`
+	GroupId              int32    `protobuf:"varint,4,opt,name=groupId,proto3" json:"groupId,omitempty"`
+	JoinerLevel          int32    `protobuf:"varint,5,opt,name=joinerLevel,proto3" json:"joinerLevel,omitempty"`
+	Ready                bool     `protobuf:"varint,6,opt,name=ready,proto3" json:"ready,omitempty"`
+	GroupNum             int32    `protobuf:"varint,7,opt,name=groupNum,proto3" json:"groupNum,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RoomMember) Reset()         { *m = RoomMember{} }
+func (m *RoomMember) String() string { return proto.CompactTextString(m) }
+func (*RoomMember) ProtoMessage()    {}
+func (*RoomMember) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{1}
+}
+func (m *RoomMember) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RoomMember.Unmarshal(m, b)
+}
+func (m *RoomMember) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RoomMember.Marshal(b, m, deterministic)
+}
+func (dst *RoomMember) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RoomMember.Merge(dst, src)
+}
+func (m *RoomMember) XXX_Size() int {
+	return xxx_messageInfo_RoomMember.Size(m)
+}
+func (m *RoomMember) XXX_DiscardUnknown() {
+	xxx_messageInfo_RoomMember.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RoomMember proto.InternalMessageInfo
+
+func (m *RoomMember) GetJoinerId() int64 {
+	if m != nil {
+		return m.JoinerId
+	}
+	return 0
+}
+
+func (m *RoomMember) GetJoinerName() string {
+	if m != nil {
+		return m.JoinerName
+	}
+	return ""
+}
+
+func (m *RoomMember) GetJoinerIconId() int32 {
+	if m != nil {
+		return m.JoinerIconId
+	}
+	return 0
+}
+
+func (m *RoomMember) GetGroupId() int32 {
+	if m != nil {
+		return m.GroupId
+	}
+	return 0
+}
+
+func (m *RoomMember) GetJoinerLevel() int32 {
+	if m != nil {
+		return m.JoinerLevel
+	}
+	return 0
+}
+
+func (m *RoomMember) GetReady() bool {
+	if m != nil {
+		return m.Ready
+	}
+	return false
+}
+
+func (m *RoomMember) GetGroupNum() int32 {
+	if m != nil {
+		return m.GroupNum
+	}
+	return 0
+}
+
+type RoomOwner struct {
+	GameType             int32    `protobuf:"varint,1,opt,name=gameType,proto3" json:"gameType,omitempty"`
+	RoomName             string   `protobuf:"bytes,2,opt,name=roomName,proto3" json:"roomName,omitempty"`
+	MaxPlayerNum         int32    `protobuf:"varint,3,opt,name=maxPlayerNum,proto3" json:"maxPlayerNum,omitempty"`
+	MapId                int32    `protobuf:"varint,4,opt,name=mapId,proto3" json:"mapId,omitempty"`
+	RoomOwnerName        string   `protobuf:"bytes,5,opt,name=roomOwnerName,proto3" json:"roomOwnerName,omitempty"`
+	RoomOwnerId          int64    `protobuf:"varint,6,opt,name=roomOwnerId,proto3" json:"roomOwnerId,omitempty"`
+	RoomId               int32    `protobuf:"varint,7,opt,name=roomId,proto3" json:"roomId,omitempty"`
+	CurPlayeNum          int32    `protobuf:"varint,8,opt,name=curPlayeNum,proto3" json:"curPlayeNum,omitempty"`
+	RoomOwnerGroupId     int32    `protobuf:"varint,9,opt,name=roomOwnerGroupId,proto3" json:"roomOwnerGroupId,omitempty"`
+	IsWarFow             bool     `protobuf:"varint,10,opt,name=isWarFow,proto3" json:"isWarFow,omitempty"`
+	RoomOwnerAvatarId    int32    `protobuf:"varint,11,opt,name=roomOwnerAvatarId,proto3" json:"roomOwnerAvatarId,omitempty"`
+	RoomOwnerGroupNum    int32    `protobuf:"varint,12,opt,name=roomOwnerGroupNum,proto3" json:"roomOwnerGroupNum,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RoomOwner) Reset()         { *m = RoomOwner{} }
+func (m *RoomOwner) String() string { return proto.CompactTextString(m) }
+func (*RoomOwner) ProtoMessage()    {}
+func (*RoomOwner) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{2}
+}
+func (m *RoomOwner) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RoomOwner.Unmarshal(m, b)
+}
+func (m *RoomOwner) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RoomOwner.Marshal(b, m, deterministic)
+}
+func (dst *RoomOwner) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RoomOwner.Merge(dst, src)
+}
+func (m *RoomOwner) XXX_Size() int {
+	return xxx_messageInfo_RoomOwner.Size(m)
+}
+func (m *RoomOwner) XXX_DiscardUnknown() {
+	xxx_messageInfo_RoomOwner.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RoomOwner proto.InternalMessageInfo
+
+func (m *RoomOwner) GetGameType() int32 {
 	if m != nil {
 		return m.GameType
 	}
 	return 0
 }
 
-func (m *Room) GetRoomName() string {
+func (m *RoomOwner) GetRoomName() string {
 	if m != nil {
 		return m.RoomName
 	}
 	return ""
 }
 
-func (m *Room) GetMaxPlayerNum() int32 {
+func (m *RoomOwner) GetMaxPlayerNum() int32 {
 	if m != nil {
 		return m.MaxPlayerNum
 	}
 	return 0
 }
 
-func (m *Room) GetMapId() int32 {
+func (m *RoomOwner) GetMapId() int32 {
 	if m != nil {
 		return m.MapId
 	}
 	return 0
 }
 
-func (m *Room) GetRoomOwnerName() string {
+func (m *RoomOwner) GetRoomOwnerName() string {
 	if m != nil {
 		return m.RoomOwnerName
 	}
 	return ""
 }
 
-func (m *Room) GetRoomOwnerId() int64 {
+func (m *RoomOwner) GetRoomOwnerId() int64 {
 	if m != nil {
 		return m.RoomOwnerId
 	}
 	return 0
 }
 
-func (m *Room) GetRoomId() int32 {
+func (m *RoomOwner) GetRoomId() int32 {
 	if m != nil {
 		return m.RoomId
 	}
 	return 0
 }
 
-func (m *Room) GetCurPlayeNum() int32 {
+func (m *RoomOwner) GetCurPlayeNum() int32 {
 	if m != nil {
 		return m.CurPlayeNum
 	}
 	return 0
 }
 
-func (m *Room) GetRoomOwnerGroupId() int32 {
+func (m *RoomOwner) GetRoomOwnerGroupId() int32 {
 	if m != nil {
 		return m.RoomOwnerGroupId
+	}
+	return 0
+}
+
+func (m *RoomOwner) GetIsWarFow() bool {
+	if m != nil {
+		return m.IsWarFow
+	}
+	return false
+}
+
+func (m *RoomOwner) GetRoomOwnerAvatarId() int32 {
+	if m != nil {
+		return m.RoomOwnerAvatarId
+	}
+	return 0
+}
+
+func (m *RoomOwner) GetRoomOwnerGroupNum() int32 {
+	if m != nil {
+		return m.RoomOwnerGroupNum
 	}
 	return 0
 }
@@ -134,7 +316,7 @@ func (m *Command) Reset()         { *m = Command{} }
 func (m *Command) String() string { return proto.CompactTextString(m) }
 func (*Command) ProtoMessage()    {}
 func (*Command) Descriptor() ([]byte, []int) {
-	return fileDescriptor_C2M_92d5198a279382cf, []int{1}
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{3}
 }
 func (m *Command) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Command.Unmarshal(m, b)
@@ -177,17 +359,17 @@ func (m *Command) GetParam() string {
 
 // 创建房间
 type C2M_CreateRoom struct {
-	Room                 *Room    `protobuf:"bytes,1,opt,name=room,proto3" json:"room,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Room                 *RoomOwner `protobuf:"bytes,1,opt,name=room,proto3" json:"room,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
 }
 
 func (m *C2M_CreateRoom) Reset()         { *m = C2M_CreateRoom{} }
 func (m *C2M_CreateRoom) String() string { return proto.CompactTextString(m) }
 func (*C2M_CreateRoom) ProtoMessage()    {}
 func (*C2M_CreateRoom) Descriptor() ([]byte, []int) {
-	return fileDescriptor_C2M_92d5198a279382cf, []int{2}
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{4}
 }
 func (m *C2M_CreateRoom) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_C2M_CreateRoom.Unmarshal(m, b)
@@ -207,7 +389,7 @@ func (m *C2M_CreateRoom) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_C2M_CreateRoom proto.InternalMessageInfo
 
-func (m *C2M_CreateRoom) GetRoom() *Room {
+func (m *C2M_CreateRoom) GetRoom() *RoomOwner {
 	if m != nil {
 		return m.Room
 	}
@@ -225,7 +407,7 @@ func (m *C2M_ReqRefreshRoomList) Reset()         { *m = C2M_ReqRefreshRoomList{}
 func (m *C2M_ReqRefreshRoomList) String() string { return proto.CompactTextString(m) }
 func (*C2M_ReqRefreshRoomList) ProtoMessage()    {}
 func (*C2M_ReqRefreshRoomList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_C2M_92d5198a279382cf, []int{3}
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{5}
 }
 func (m *C2M_ReqRefreshRoomList) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_C2M_ReqRefreshRoomList.Unmarshal(m, b)
@@ -257,7 +439,7 @@ func (m *C2M_ReqJoinRoom) Reset()         { *m = C2M_ReqJoinRoom{} }
 func (m *C2M_ReqJoinRoom) String() string { return proto.CompactTextString(m) }
 func (*C2M_ReqJoinRoom) ProtoMessage()    {}
 func (*C2M_ReqJoinRoom) Descriptor() ([]byte, []int) {
-	return fileDescriptor_C2M_92d5198a279382cf, []int{4}
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{6}
 }
 func (m *C2M_ReqJoinRoom) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_C2M_ReqJoinRoom.Unmarshal(m, b)
@@ -295,7 +477,7 @@ func (m *C2M_StartBattle) Reset()         { *m = C2M_StartBattle{} }
 func (m *C2M_StartBattle) String() string { return proto.CompactTextString(m) }
 func (*C2M_StartBattle) ProtoMessage()    {}
 func (*C2M_StartBattle) Descriptor() ([]byte, []int) {
-	return fileDescriptor_C2M_92d5198a279382cf, []int{5}
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{7}
 }
 func (m *C2M_StartBattle) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_C2M_StartBattle.Unmarshal(m, b)
@@ -327,7 +509,7 @@ func (m *C2M_ReqReady) Reset()         { *m = C2M_ReqReady{} }
 func (m *C2M_ReqReady) String() string { return proto.CompactTextString(m) }
 func (*C2M_ReqReady) ProtoMessage()    {}
 func (*C2M_ReqReady) Descriptor() ([]byte, []int) {
-	return fileDescriptor_C2M_92d5198a279382cf, []int{6}
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{8}
 }
 func (m *C2M_ReqReady) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_C2M_ReqReady.Unmarshal(m, b)
@@ -365,7 +547,7 @@ func (m *C2M_LoadFinished) Reset()         { *m = C2M_LoadFinished{} }
 func (m *C2M_LoadFinished) String() string { return proto.CompactTextString(m) }
 func (*C2M_LoadFinished) ProtoMessage()    {}
 func (*C2M_LoadFinished) Descriptor() ([]byte, []int) {
-	return fileDescriptor_C2M_92d5198a279382cf, []int{7}
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{9}
 }
 func (m *C2M_LoadFinished) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_C2M_LoadFinished.Unmarshal(m, b)
@@ -397,7 +579,7 @@ func (m *C2M_Command) Reset()         { *m = C2M_Command{} }
 func (m *C2M_Command) String() string { return proto.CompactTextString(m) }
 func (*C2M_Command) ProtoMessage()    {}
 func (*C2M_Command) Descriptor() ([]byte, []int) {
-	return fileDescriptor_C2M_92d5198a279382cf, []int{8}
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{10}
 }
 func (m *C2M_Command) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_C2M_Command.Unmarshal(m, b)
@@ -424,8 +606,604 @@ func (m *C2M_Command) GetCmd() *Command {
 	return nil
 }
 
+// 赢得一场战役
+type C2M_WinBattle struct {
+	HeroIds              []int32  `protobuf:"varint,1,rep,packed,name=heroIds,proto3" json:"heroIds,omitempty"`
+	BattleId             int32    `protobuf:"varint,2,opt,name=battleId,proto3" json:"battleId,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *C2M_WinBattle) Reset()         { *m = C2M_WinBattle{} }
+func (m *C2M_WinBattle) String() string { return proto.CompactTextString(m) }
+func (*C2M_WinBattle) ProtoMessage()    {}
+func (*C2M_WinBattle) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{11}
+}
+func (m *C2M_WinBattle) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C2M_WinBattle.Unmarshal(m, b)
+}
+func (m *C2M_WinBattle) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C2M_WinBattle.Marshal(b, m, deterministic)
+}
+func (dst *C2M_WinBattle) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C2M_WinBattle.Merge(dst, src)
+}
+func (m *C2M_WinBattle) XXX_Size() int {
+	return xxx_messageInfo_C2M_WinBattle.Size(m)
+}
+func (m *C2M_WinBattle) XXX_DiscardUnknown() {
+	xxx_messageInfo_C2M_WinBattle.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C2M_WinBattle proto.InternalMessageInfo
+
+func (m *C2M_WinBattle) GetHeroIds() []int32 {
+	if m != nil {
+		return m.HeroIds
+	}
+	return nil
+}
+
+func (m *C2M_WinBattle) GetBattleId() int32 {
+	if m != nil {
+		return m.BattleId
+	}
+	return 0
+}
+
+// 输一次战役
+type C2M_FailedBattle struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *C2M_FailedBattle) Reset()         { *m = C2M_FailedBattle{} }
+func (m *C2M_FailedBattle) String() string { return proto.CompactTextString(m) }
+func (*C2M_FailedBattle) ProtoMessage()    {}
+func (*C2M_FailedBattle) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{12}
+}
+func (m *C2M_FailedBattle) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C2M_FailedBattle.Unmarshal(m, b)
+}
+func (m *C2M_FailedBattle) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C2M_FailedBattle.Marshal(b, m, deterministic)
+}
+func (dst *C2M_FailedBattle) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C2M_FailedBattle.Merge(dst, src)
+}
+func (m *C2M_FailedBattle) XXX_Size() int {
+	return xxx_messageInfo_C2M_FailedBattle.Size(m)
+}
+func (m *C2M_FailedBattle) XXX_DiscardUnknown() {
+	xxx_messageInfo_C2M_FailedBattle.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C2M_FailedBattle proto.InternalMessageInfo
+
+// 观看广告
+type C2M_WatchAds struct {
+	IsBanner             bool     `protobuf:"varint,1,opt,name=isBanner,proto3" json:"isBanner,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *C2M_WatchAds) Reset()         { *m = C2M_WatchAds{} }
+func (m *C2M_WatchAds) String() string { return proto.CompactTextString(m) }
+func (*C2M_WatchAds) ProtoMessage()    {}
+func (*C2M_WatchAds) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{13}
+}
+func (m *C2M_WatchAds) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C2M_WatchAds.Unmarshal(m, b)
+}
+func (m *C2M_WatchAds) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C2M_WatchAds.Marshal(b, m, deterministic)
+}
+func (dst *C2M_WatchAds) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C2M_WatchAds.Merge(dst, src)
+}
+func (m *C2M_WatchAds) XXX_Size() int {
+	return xxx_messageInfo_C2M_WatchAds.Size(m)
+}
+func (m *C2M_WatchAds) XXX_DiscardUnknown() {
+	xxx_messageInfo_C2M_WatchAds.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C2M_WatchAds proto.InternalMessageInfo
+
+func (m *C2M_WatchAds) GetIsBanner() bool {
+	if m != nil {
+		return m.IsBanner
+	}
+	return false
+}
+
+// 玩家修改昵称
+type C2M_ChangeNickName struct {
+	NickName             string   `protobuf:"bytes,1,opt,name=nickName,proto3" json:"nickName,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *C2M_ChangeNickName) Reset()         { *m = C2M_ChangeNickName{} }
+func (m *C2M_ChangeNickName) String() string { return proto.CompactTextString(m) }
+func (*C2M_ChangeNickName) ProtoMessage()    {}
+func (*C2M_ChangeNickName) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{14}
+}
+func (m *C2M_ChangeNickName) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C2M_ChangeNickName.Unmarshal(m, b)
+}
+func (m *C2M_ChangeNickName) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C2M_ChangeNickName.Marshal(b, m, deterministic)
+}
+func (dst *C2M_ChangeNickName) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C2M_ChangeNickName.Merge(dst, src)
+}
+func (m *C2M_ChangeNickName) XXX_Size() int {
+	return xxx_messageInfo_C2M_ChangeNickName.Size(m)
+}
+func (m *C2M_ChangeNickName) XXX_DiscardUnknown() {
+	xxx_messageInfo_C2M_ChangeNickName.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C2M_ChangeNickName proto.InternalMessageInfo
+
+func (m *C2M_ChangeNickName) GetNickName() string {
+	if m != nil {
+		return m.NickName
+	}
+	return ""
+}
+
+// 玩家修改头像id
+type C2M_ChangeAvatarIcon struct {
+	AvatarId             int32    `protobuf:"varint,1,opt,name=avatarId,proto3" json:"avatarId,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *C2M_ChangeAvatarIcon) Reset()         { *m = C2M_ChangeAvatarIcon{} }
+func (m *C2M_ChangeAvatarIcon) String() string { return proto.CompactTextString(m) }
+func (*C2M_ChangeAvatarIcon) ProtoMessage()    {}
+func (*C2M_ChangeAvatarIcon) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{15}
+}
+func (m *C2M_ChangeAvatarIcon) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C2M_ChangeAvatarIcon.Unmarshal(m, b)
+}
+func (m *C2M_ChangeAvatarIcon) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C2M_ChangeAvatarIcon.Marshal(b, m, deterministic)
+}
+func (dst *C2M_ChangeAvatarIcon) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C2M_ChangeAvatarIcon.Merge(dst, src)
+}
+func (m *C2M_ChangeAvatarIcon) XXX_Size() int {
+	return xxx_messageInfo_C2M_ChangeAvatarIcon.Size(m)
+}
+func (m *C2M_ChangeAvatarIcon) XXX_DiscardUnknown() {
+	xxx_messageInfo_C2M_ChangeAvatarIcon.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C2M_ChangeAvatarIcon proto.InternalMessageInfo
+
+func (m *C2M_ChangeAvatarIcon) GetAvatarId() int32 {
+	if m != nil {
+		return m.AvatarId
+	}
+	return 0
+}
+
+// 玩家改变装备位置
+type C2M2C_ChangeEquipItemPos struct {
+	ChangeType           C2M2C_ChangeEquipItemPos_HeroToBagType `protobuf:"varint,1,opt,name=changeType,proto3,enum=message.C2M2C_ChangeEquipItemPos_HeroToBagType" json:"changeType,omitempty"`
+	Index1               int32                                  `protobuf:"varint,2,opt,name=index1,proto3" json:"index1,omitempty"`
+	Index2               int32                                  `protobuf:"varint,3,opt,name=index2,proto3" json:"index2,omitempty"`
+	HeroId               int32                                  `protobuf:"varint,4,opt,name=heroId,proto3" json:"heroId,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                               `json:"-"`
+	XXX_unrecognized     []byte                                 `json:"-"`
+	XXX_sizecache        int32                                  `json:"-"`
+}
+
+func (m *C2M2C_ChangeEquipItemPos) Reset()         { *m = C2M2C_ChangeEquipItemPos{} }
+func (m *C2M2C_ChangeEquipItemPos) String() string { return proto.CompactTextString(m) }
+func (*C2M2C_ChangeEquipItemPos) ProtoMessage()    {}
+func (*C2M2C_ChangeEquipItemPos) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{16}
+}
+func (m *C2M2C_ChangeEquipItemPos) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C2M2C_ChangeEquipItemPos.Unmarshal(m, b)
+}
+func (m *C2M2C_ChangeEquipItemPos) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C2M2C_ChangeEquipItemPos.Marshal(b, m, deterministic)
+}
+func (dst *C2M2C_ChangeEquipItemPos) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C2M2C_ChangeEquipItemPos.Merge(dst, src)
+}
+func (m *C2M2C_ChangeEquipItemPos) XXX_Size() int {
+	return xxx_messageInfo_C2M2C_ChangeEquipItemPos.Size(m)
+}
+func (m *C2M2C_ChangeEquipItemPos) XXX_DiscardUnknown() {
+	xxx_messageInfo_C2M2C_ChangeEquipItemPos.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C2M2C_ChangeEquipItemPos proto.InternalMessageInfo
+
+func (m *C2M2C_ChangeEquipItemPos) GetChangeType() C2M2C_ChangeEquipItemPos_HeroToBagType {
+	if m != nil {
+		return m.ChangeType
+	}
+	return C2M2C_ChangeEquipItemPos_HeroToBag
+}
+
+func (m *C2M2C_ChangeEquipItemPos) GetIndex1() int32 {
+	if m != nil {
+		return m.Index1
+	}
+	return 0
+}
+
+func (m *C2M2C_ChangeEquipItemPos) GetIndex2() int32 {
+	if m != nil {
+		return m.Index2
+	}
+	return 0
+}
+
+func (m *C2M2C_ChangeEquipItemPos) GetHeroId() int32 {
+	if m != nil {
+		return m.HeroId
+	}
+	return 0
+}
+
+// 玩家退出房间
+type C2M_QuitRoom struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *C2M_QuitRoom) Reset()         { *m = C2M_QuitRoom{} }
+func (m *C2M_QuitRoom) String() string { return proto.CompactTextString(m) }
+func (*C2M_QuitRoom) ProtoMessage()    {}
+func (*C2M_QuitRoom) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{17}
+}
+func (m *C2M_QuitRoom) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C2M_QuitRoom.Unmarshal(m, b)
+}
+func (m *C2M_QuitRoom) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C2M_QuitRoom.Marshal(b, m, deterministic)
+}
+func (dst *C2M_QuitRoom) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C2M_QuitRoom.Merge(dst, src)
+}
+func (m *C2M_QuitRoom) XXX_Size() int {
+	return xxx_messageInfo_C2M_QuitRoom.Size(m)
+}
+func (m *C2M_QuitRoom) XXX_DiscardUnknown() {
+	xxx_messageInfo_C2M_QuitRoom.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C2M_QuitRoom proto.InternalMessageInfo
+
+// 玩家买英雄
+type C2M_BuyHero struct {
+	HeroId               int32    `protobuf:"varint,1,opt,name=heroId,proto3" json:"heroId,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *C2M_BuyHero) Reset()         { *m = C2M_BuyHero{} }
+func (m *C2M_BuyHero) String() string { return proto.CompactTextString(m) }
+func (*C2M_BuyHero) ProtoMessage()    {}
+func (*C2M_BuyHero) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{18}
+}
+func (m *C2M_BuyHero) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C2M_BuyHero.Unmarshal(m, b)
+}
+func (m *C2M_BuyHero) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C2M_BuyHero.Marshal(b, m, deterministic)
+}
+func (dst *C2M_BuyHero) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C2M_BuyHero.Merge(dst, src)
+}
+func (m *C2M_BuyHero) XXX_Size() int {
+	return xxx_messageInfo_C2M_BuyHero.Size(m)
+}
+func (m *C2M_BuyHero) XXX_DiscardUnknown() {
+	xxx_messageInfo_C2M_BuyHero.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C2M_BuyHero proto.InternalMessageInfo
+
+func (m *C2M_BuyHero) GetHeroId() int32 {
+	if m != nil {
+		return m.HeroId
+	}
+	return 0
+}
+
+// 聊天
+type C2M2C_Chat struct {
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Chat                 string   `protobuf:"bytes,2,opt,name=chat,proto3" json:"chat,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *C2M2C_Chat) Reset()         { *m = C2M2C_Chat{} }
+func (m *C2M2C_Chat) String() string { return proto.CompactTextString(m) }
+func (*C2M2C_Chat) ProtoMessage()    {}
+func (*C2M2C_Chat) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{19}
+}
+func (m *C2M2C_Chat) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C2M2C_Chat.Unmarshal(m, b)
+}
+func (m *C2M2C_Chat) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C2M2C_Chat.Marshal(b, m, deterministic)
+}
+func (dst *C2M2C_Chat) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C2M2C_Chat.Merge(dst, src)
+}
+func (m *C2M2C_Chat) XXX_Size() int {
+	return xxx_messageInfo_C2M2C_Chat.Size(m)
+}
+func (m *C2M2C_Chat) XXX_DiscardUnknown() {
+	xxx_messageInfo_C2M2C_Chat.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C2M2C_Chat proto.InternalMessageInfo
+
+func (m *C2M2C_Chat) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *C2M2C_Chat) GetChat() string {
+	if m != nil {
+		return m.Chat
+	}
+	return ""
+}
+
+// 学习技能
+type C2M_LearnSkill struct {
+	SkillId              int32    `protobuf:"varint,1,opt,name=skillId,proto3" json:"skillId,omitempty"`
+	SkillPoint           int32    `protobuf:"varint,2,opt,name=skillPoint,proto3" json:"skillPoint,omitempty"`
+	HeroId               int32    `protobuf:"varint,3,opt,name=heroId,proto3" json:"heroId,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *C2M_LearnSkill) Reset()         { *m = C2M_LearnSkill{} }
+func (m *C2M_LearnSkill) String() string { return proto.CompactTextString(m) }
+func (*C2M_LearnSkill) ProtoMessage()    {}
+func (*C2M_LearnSkill) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{20}
+}
+func (m *C2M_LearnSkill) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C2M_LearnSkill.Unmarshal(m, b)
+}
+func (m *C2M_LearnSkill) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C2M_LearnSkill.Marshal(b, m, deterministic)
+}
+func (dst *C2M_LearnSkill) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C2M_LearnSkill.Merge(dst, src)
+}
+func (m *C2M_LearnSkill) XXX_Size() int {
+	return xxx_messageInfo_C2M_LearnSkill.Size(m)
+}
+func (m *C2M_LearnSkill) XXX_DiscardUnknown() {
+	xxx_messageInfo_C2M_LearnSkill.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C2M_LearnSkill proto.InternalMessageInfo
+
+func (m *C2M_LearnSkill) GetSkillId() int32 {
+	if m != nil {
+		return m.SkillId
+	}
+	return 0
+}
+
+func (m *C2M_LearnSkill) GetSkillPoint() int32 {
+	if m != nil {
+		return m.SkillPoint
+	}
+	return 0
+}
+
+func (m *C2M_LearnSkill) GetHeroId() int32 {
+	if m != nil {
+		return m.HeroId
+	}
+	return 0
+}
+
+// 卸载和装载技能
+type C2M2C_ChangeSkill struct {
+	SkillId              int32    `protobuf:"varint,1,opt,name=skillId,proto3" json:"skillId,omitempty"`
+	HeroId               int32    `protobuf:"varint,2,opt,name=heroId,proto3" json:"heroId,omitempty"`
+	Index                int32    `protobuf:"varint,3,opt,name=index,proto3" json:"index,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *C2M2C_ChangeSkill) Reset()         { *m = C2M2C_ChangeSkill{} }
+func (m *C2M2C_ChangeSkill) String() string { return proto.CompactTextString(m) }
+func (*C2M2C_ChangeSkill) ProtoMessage()    {}
+func (*C2M2C_ChangeSkill) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{21}
+}
+func (m *C2M2C_ChangeSkill) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C2M2C_ChangeSkill.Unmarshal(m, b)
+}
+func (m *C2M2C_ChangeSkill) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C2M2C_ChangeSkill.Marshal(b, m, deterministic)
+}
+func (dst *C2M2C_ChangeSkill) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C2M2C_ChangeSkill.Merge(dst, src)
+}
+func (m *C2M2C_ChangeSkill) XXX_Size() int {
+	return xxx_messageInfo_C2M2C_ChangeSkill.Size(m)
+}
+func (m *C2M2C_ChangeSkill) XXX_DiscardUnknown() {
+	xxx_messageInfo_C2M2C_ChangeSkill.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C2M2C_ChangeSkill proto.InternalMessageInfo
+
+func (m *C2M2C_ChangeSkill) GetSkillId() int32 {
+	if m != nil {
+		return m.SkillId
+	}
+	return 0
+}
+
+func (m *C2M2C_ChangeSkill) GetHeroId() int32 {
+	if m != nil {
+		return m.HeroId
+	}
+	return 0
+}
+
+func (m *C2M2C_ChangeSkill) GetIndex() int32 {
+	if m != nil {
+		return m.Index
+	}
+	return 0
+}
+
+// 获得成就
+type C2M2C_GetAchievement struct {
+	AchievenId           int32    `protobuf:"varint,1,opt,name=achievenId,proto3" json:"achievenId,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *C2M2C_GetAchievement) Reset()         { *m = C2M2C_GetAchievement{} }
+func (m *C2M2C_GetAchievement) String() string { return proto.CompactTextString(m) }
+func (*C2M2C_GetAchievement) ProtoMessage()    {}
+func (*C2M2C_GetAchievement) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{22}
+}
+func (m *C2M2C_GetAchievement) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C2M2C_GetAchievement.Unmarshal(m, b)
+}
+func (m *C2M2C_GetAchievement) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C2M2C_GetAchievement.Marshal(b, m, deterministic)
+}
+func (dst *C2M2C_GetAchievement) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C2M2C_GetAchievement.Merge(dst, src)
+}
+func (m *C2M2C_GetAchievement) XXX_Size() int {
+	return xxx_messageInfo_C2M2C_GetAchievement.Size(m)
+}
+func (m *C2M2C_GetAchievement) XXX_DiscardUnknown() {
+	xxx_messageInfo_C2M2C_GetAchievement.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C2M2C_GetAchievement proto.InternalMessageInfo
+
+func (m *C2M2C_GetAchievement) GetAchievenId() int32 {
+	if m != nil {
+		return m.AchievenId
+	}
+	return 0
+}
+
+// 获得任务奖励
+type C2M2C_GetTask struct {
+	TaskId               int32    `protobuf:"varint,1,opt,name=taskId,proto3" json:"taskId,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *C2M2C_GetTask) Reset()         { *m = C2M2C_GetTask{} }
+func (m *C2M2C_GetTask) String() string { return proto.CompactTextString(m) }
+func (*C2M2C_GetTask) ProtoMessage()    {}
+func (*C2M2C_GetTask) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{23}
+}
+func (m *C2M2C_GetTask) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C2M2C_GetTask.Unmarshal(m, b)
+}
+func (m *C2M2C_GetTask) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C2M2C_GetTask.Marshal(b, m, deterministic)
+}
+func (dst *C2M2C_GetTask) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C2M2C_GetTask.Merge(dst, src)
+}
+func (m *C2M2C_GetTask) XXX_Size() int {
+	return xxx_messageInfo_C2M2C_GetTask.Size(m)
+}
+func (m *C2M2C_GetTask) XXX_DiscardUnknown() {
+	xxx_messageInfo_C2M2C_GetTask.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C2M2C_GetTask proto.InternalMessageInfo
+
+func (m *C2M2C_GetTask) GetTaskId() int32 {
+	if m != nil {
+		return m.TaskId
+	}
+	return 0
+}
+
+// 签到奖励
+type C2M2C_GetSign struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *C2M2C_GetSign) Reset()         { *m = C2M2C_GetSign{} }
+func (m *C2M2C_GetSign) String() string { return proto.CompactTextString(m) }
+func (*C2M2C_GetSign) ProtoMessage()    {}
+func (*C2M2C_GetSign) Descriptor() ([]byte, []int) {
+	return fileDescriptor_C2M_d4e5f8508e550154, []int{24}
+}
+func (m *C2M2C_GetSign) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C2M2C_GetSign.Unmarshal(m, b)
+}
+func (m *C2M2C_GetSign) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C2M2C_GetSign.Marshal(b, m, deterministic)
+}
+func (dst *C2M2C_GetSign) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C2M2C_GetSign.Merge(dst, src)
+}
+func (m *C2M2C_GetSign) XXX_Size() int {
+	return xxx_messageInfo_C2M2C_GetSign.Size(m)
+}
+func (m *C2M2C_GetSign) XXX_DiscardUnknown() {
+	xxx_messageInfo_C2M2C_GetSign.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C2M2C_GetSign proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*Room)(nil), "message.Room")
+	proto.RegisterType((*RoomMember)(nil), "message.RoomMember")
+	proto.RegisterType((*RoomOwner)(nil), "message.RoomOwner")
 	proto.RegisterType((*Command)(nil), "message.Command")
 	proto.RegisterType((*C2M_CreateRoom)(nil), "message.C2M_CreateRoom")
 	proto.RegisterType((*C2M_ReqRefreshRoomList)(nil), "message.C2M_ReqRefreshRoomList")
@@ -434,34 +1212,81 @@ func init() {
 	proto.RegisterType((*C2M_ReqReady)(nil), "message.C2M_ReqReady")
 	proto.RegisterType((*C2M_LoadFinished)(nil), "message.C2M_LoadFinished")
 	proto.RegisterType((*C2M_Command)(nil), "message.C2M_Command")
+	proto.RegisterType((*C2M_WinBattle)(nil), "message.C2M_WinBattle")
+	proto.RegisterType((*C2M_FailedBattle)(nil), "message.C2M_FailedBattle")
+	proto.RegisterType((*C2M_WatchAds)(nil), "message.C2M_WatchAds")
+	proto.RegisterType((*C2M_ChangeNickName)(nil), "message.C2M_ChangeNickName")
+	proto.RegisterType((*C2M_ChangeAvatarIcon)(nil), "message.C2M_ChangeAvatarIcon")
+	proto.RegisterType((*C2M2C_ChangeEquipItemPos)(nil), "message.C2M2C_ChangeEquipItemPos")
+	proto.RegisterType((*C2M_QuitRoom)(nil), "message.C2M_QuitRoom")
+	proto.RegisterType((*C2M_BuyHero)(nil), "message.C2M_BuyHero")
+	proto.RegisterType((*C2M2C_Chat)(nil), "message.C2M2C_Chat")
+	proto.RegisterType((*C2M_LearnSkill)(nil), "message.C2M_LearnSkill")
+	proto.RegisterType((*C2M2C_ChangeSkill)(nil), "message.C2M2C_ChangeSkill")
+	proto.RegisterType((*C2M2C_GetAchievement)(nil), "message.C2M2C_GetAchievement")
+	proto.RegisterType((*C2M2C_GetTask)(nil), "message.C2M2C_GetTask")
+	proto.RegisterType((*C2M2C_GetSign)(nil), "message.C2M2C_GetSign")
+	proto.RegisterEnum("message.C2M2C_ChangeEquipItemPos_HeroToBagType", C2M2C_ChangeEquipItemPos_HeroToBagType_name, C2M2C_ChangeEquipItemPos_HeroToBagType_value)
 }
 
-func init() { proto.RegisterFile("C2M.proto", fileDescriptor_C2M_92d5198a279382cf) }
+func init() { proto.RegisterFile("C2M.proto", fileDescriptor_C2M_d4e5f8508e550154) }
 
-var fileDescriptor_C2M_92d5198a279382cf = []byte{
-	// 382 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x64, 0x52, 0x4d, 0x6f, 0xda, 0x40,
-	0x10, 0x95, 0xf9, 0xf6, 0x00, 0x2d, 0x5d, 0x55, 0xc8, 0xea, 0xc9, 0x5d, 0x71, 0xa0, 0x3d, 0x20,
-	0x15, 0xfe, 0x41, 0x2d, 0xb5, 0x72, 0x05, 0x34, 0xda, 0xe4, 0x1a, 0x45, 0x1b, 0x76, 0x03, 0x96,
-	0x58, 0xaf, 0xb3, 0x36, 0x4a, 0xf8, 0x43, 0xf9, 0x9d, 0xd1, 0x8c, 0x8d, 0x01, 0xe5, 0xe6, 0xf7,
-	0xde, 0xcc, 0x9b, 0x99, 0xb7, 0x06, 0x3f, 0x9a, 0xaf, 0x66, 0x99, 0xb3, 0x85, 0x65, 0x5d, 0xa3,
-	0xf3, 0x5c, 0x6e, 0x35, 0x7f, 0x6b, 0x40, 0x4b, 0x58, 0x6b, 0xd8, 0x37, 0xe8, 0x6d, 0xa5, 0xd1,
-	0x77, 0xc7, 0x4c, 0x07, 0x5e, 0xe8, 0x4d, 0xdb, 0xa2, 0xc6, 0xa8, 0x39, 0x6b, 0xcd, 0x5a, 0x1a,
-	0x1d, 0x34, 0x42, 0x6f, 0xea, 0x8b, 0x1a, 0x33, 0x0e, 0x03, 0x23, 0x5f, 0x6f, 0xf6, 0xf2, 0xa8,
-	0xdd, 0xfa, 0x60, 0x82, 0x26, 0xf5, 0x5e, 0x71, 0xec, 0x2b, 0xb4, 0x8d, 0xcc, 0x62, 0x15, 0xb4,
-	0x48, 0x2c, 0x01, 0x9b, 0xc0, 0x10, 0x5d, 0xfe, 0xbf, 0xa4, 0xda, 0x91, 0x75, 0x9b, 0xac, 0xaf,
-	0x49, 0x16, 0x42, 0xbf, 0x26, 0x62, 0x15, 0x74, 0x42, 0x6f, 0xda, 0x14, 0x97, 0x14, 0x1b, 0x43,
-	0x07, 0x61, 0xac, 0x82, 0x2e, 0xd9, 0x57, 0x08, 0x3b, 0x37, 0x07, 0x47, 0x5b, 0xe0, 0x62, 0x3d,
-	0x12, 0x2f, 0x29, 0xf6, 0x13, 0x46, 0xb5, 0xd1, 0x5f, 0x67, 0x0f, 0xb8, 0xa2, 0x4f, 0x65, 0x1f,
-	0x78, 0x7e, 0x0f, 0xdd, 0xc8, 0x1a, 0x23, 0x53, 0x85, 0x71, 0x64, 0x74, 0x5b, 0xac, 0x4e, 0x51,
-	0x9d, 0x30, 0x0d, 0x2d, 0xcb, 0x28, 0xc9, 0x46, 0x35, 0xf4, 0x4c, 0x61, 0x18, 0x99, 0x74, 0xb2,
-	0x4c, 0xca, 0x17, 0x25, 0xe0, 0x0b, 0xf8, 0x14, 0xcd, 0x57, 0x0f, 0x91, 0xd3, 0xb2, 0xd0, 0xf4,
-	0x20, 0xdf, 0xa1, 0x85, 0x4b, 0xd0, 0x84, 0xfe, 0x7c, 0x38, 0xab, 0x5e, 0x6c, 0x86, 0xa2, 0x20,
-	0x89, 0x07, 0x30, 0xc6, 0x26, 0xa1, 0x9f, 0x85, 0x7e, 0x72, 0x3a, 0xdf, 0xa1, 0xb6, 0x4c, 0xf2,
-	0x82, 0xff, 0x80, 0xcf, 0x95, 0xf2, 0xcf, 0x26, 0x29, 0xf9, 0x9d, 0x63, 0xf2, 0x2e, 0x63, 0xe2,
-	0x5f, 0xca, 0xd2, 0xdb, 0x42, 0xba, 0xe2, 0xb7, 0x2c, 0x8a, 0xbd, 0xe6, 0x13, 0x18, 0xd4, 0xbe,
-	0x52, 0x1d, 0x71, 0x65, 0x87, 0x1f, 0xd4, 0xd9, 0x13, 0x25, 0xe0, 0x0c, 0x46, 0x58, 0xb5, 0xb4,
-	0x52, 0xfd, 0x49, 0xd2, 0x24, 0xdf, 0x69, 0xc5, 0x7f, 0x41, 0x9f, 0xce, 0xa8, 0x92, 0xe2, 0xd0,
-	0xdc, 0x18, 0x55, 0x9d, 0x30, 0xaa, 0x4f, 0xa8, 0x64, 0x81, 0xe2, 0x63, 0x87, 0xfe, 0xc8, 0xc5,
-	0x7b, 0x00, 0x00, 0x00, 0xff, 0xff, 0x12, 0x77, 0x05, 0x07, 0x9e, 0x02, 0x00, 0x00,
+var fileDescriptor_C2M_d4e5f8508e550154 = []byte{
+	// 892 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x55, 0xdd, 0x6e, 0x23, 0x35,
+	0x14, 0x66, 0x92, 0xa6, 0x49, 0x4e, 0xda, 0x6e, 0x6a, 0x56, 0xab, 0xd1, 0x5e, 0xa0, 0xc8, 0x5a,
+	0x20, 0xac, 0xa0, 0xb0, 0x03, 0x42, 0x48, 0x5c, 0xb5, 0xd1, 0xb6, 0x04, 0xb5, 0xdd, 0x32, 0xad,
+	0xd4, 0x0b, 0x84, 0x2a, 0x37, 0x63, 0x92, 0xa1, 0x19, 0x3b, 0xeb, 0x71, 0xba, 0xdb, 0xe7, 0xe1,
+	0xad, 0x78, 0x0a, 0x1e, 0x01, 0x9d, 0x63, 0x8f, 0x67, 0x42, 0x05, 0x7b, 0xe7, 0xef, 0x3b, 0xdf,
+	0xf9, 0xf5, 0xf1, 0x0c, 0xf4, 0x27, 0xc9, 0xd9, 0xc1, 0xca, 0x68, 0xab, 0x59, 0xb7, 0x90, 0x65,
+	0x29, 0xe6, 0x92, 0xdf, 0xc0, 0x56, 0xaa, 0x75, 0xc1, 0xc6, 0xd0, 0xd1, 0xef, 0x94, 0x34, 0x71,
+	0x34, 0x8a, 0xc6, 0x83, 0x84, 0x1d, 0x78, 0xc1, 0x01, 0x5a, 0xdf, 0xa0, 0x25, 0x75, 0x02, 0xf6,
+	0x15, 0x74, 0x0b, 0x59, 0xdc, 0x4a, 0x53, 0xc6, 0xad, 0x51, 0x7b, 0x3c, 0x48, 0x3e, 0xde, 0xd0,
+	0x9e, 0x91, 0x2d, 0xad, 0x34, 0xfc, 0xaf, 0x08, 0xa0, 0xe6, 0xd9, 0x73, 0xe8, 0xfd, 0xa1, 0x73,
+	0x25, 0xcd, 0x34, 0xa3, 0x54, 0xed, 0x34, 0x60, 0xf6, 0x09, 0x80, 0x3b, 0x9f, 0x8b, 0x42, 0xc6,
+	0xad, 0x51, 0x34, 0xee, 0xa7, 0x0d, 0x86, 0x71, 0xd8, 0xf1, 0xda, 0x99, 0x56, 0xd3, 0x2c, 0x6e,
+	0x8f, 0xa2, 0x71, 0x27, 0xdd, 0xe0, 0x58, 0x0c, 0xdd, 0xb9, 0xd1, 0xeb, 0xd5, 0x34, 0x8b, 0xb7,
+	0xc8, 0x5c, 0x41, 0x36, 0x82, 0x81, 0x53, 0x9e, 0xca, 0x7b, 0xb9, 0x8c, 0x3b, 0x64, 0x6d, 0x52,
+	0xec, 0x29, 0x74, 0x8c, 0x14, 0xd9, 0x43, 0xbc, 0x3d, 0x8a, 0xc6, 0xbd, 0xd4, 0x01, 0xac, 0x98,
+	0x42, 0x9c, 0xaf, 0x8b, 0xb8, 0x4b, 0x4e, 0x01, 0xf3, 0x3f, 0xdb, 0xd0, 0x0f, 0x03, 0x22, 0xa5,
+	0x28, 0xe4, 0xd5, 0xc3, 0x4a, 0x52, 0x6f, 0xa8, 0xf4, 0x18, 0x6d, 0x46, 0xeb, 0xa2, 0xd1, 0x59,
+	0xc0, 0xd8, 0x57, 0x21, 0xde, 0x5f, 0x2c, 0xc5, 0x83, 0x34, 0x98, 0xc5, 0xf7, 0xd5, 0xe4, 0xb0,
+	0xb6, 0x42, 0xd4, 0x5d, 0x39, 0xc0, 0x5e, 0xc0, 0xae, 0xa9, 0xd2, 0x53, 0xe8, 0x0e, 0x85, 0xde,
+	0x24, 0xb1, 0xf3, 0x40, 0x4c, 0x33, 0xea, 0xae, 0x9d, 0x36, 0x29, 0xf6, 0x0c, 0xb6, 0x11, 0x4e,
+	0x33, 0xdf, 0xa1, 0x47, 0xe8, 0x39, 0x5b, 0x1b, 0xaa, 0x02, 0x0b, 0xeb, 0xb9, 0x99, 0x35, 0x28,
+	0xf6, 0x12, 0x86, 0x21, 0xd0, 0x89, 0x1f, 0x7c, 0x9f, 0x64, 0x8f, 0x78, 0x9c, 0x41, 0x5e, 0x5e,
+	0x0b, 0x73, 0xac, 0xdf, 0xc5, 0x40, 0x23, 0x0e, 0x98, 0x7d, 0x09, 0xfb, 0x41, 0x7f, 0x78, 0x2f,
+	0xac, 0xc0, 0x4a, 0x07, 0x14, 0xe8, 0xb1, 0x61, 0x43, 0x7d, 0x52, 0x5d, 0xce, 0xce, 0xbf, 0xd4,
+	0x95, 0x81, 0xff, 0x06, 0xdd, 0x89, 0x2e, 0x0a, 0xa1, 0xa8, 0x84, 0x15, 0xcd, 0xd4, 0xaf, 0x5f,
+	0x27, 0x0d, 0x98, 0x9a, 0x75, 0x32, 0xba, 0xc1, 0x96, 0x6f, 0xb6, 0xa6, 0xf0, 0x12, 0x56, 0xc2,
+	0x08, 0x77, 0x43, 0xfd, 0xd4, 0x01, 0xfe, 0x03, 0xec, 0x4d, 0x92, 0xb3, 0x9b, 0x89, 0x91, 0xc2,
+	0x4a, 0x7a, 0x4c, 0x9f, 0xc1, 0x16, 0x56, 0xf1, 0x3f, 0x6f, 0x89, 0xec, 0x3c, 0x86, 0x67, 0xe8,
+	0x99, 0xca, 0xb7, 0xa9, 0xfc, 0xdd, 0xc8, 0x72, 0x81, 0x82, 0xd3, 0xbc, 0xb4, 0xfc, 0x0b, 0x78,
+	0xe2, 0x2d, 0x3f, 0xeb, 0x5c, 0x51, 0xd0, 0xfa, 0x8e, 0xa2, 0xe6, 0x1d, 0xf1, 0x7d, 0x27, 0xbd,
+	0xb4, 0xc2, 0xd8, 0x23, 0x61, 0xed, 0x52, 0xf2, 0x17, 0xb0, 0x13, 0xe2, 0xe2, 0x0a, 0x87, 0xc5,
+	0x8e, 0x1a, 0x8b, 0xcd, 0x19, 0x0c, 0x51, 0x75, 0xaa, 0x45, 0x76, 0x9c, 0xab, 0xbc, 0x5c, 0xc8,
+	0x8c, 0xbf, 0x82, 0x01, 0xf5, 0xe2, 0xc7, 0xc5, 0xa1, 0x3d, 0x2b, 0x32, 0xdf, 0xc7, 0x30, 0xf4,
+	0xe1, 0xcd, 0x29, 0x1a, 0xf9, 0x6b, 0xd8, 0x45, 0x97, 0xeb, 0x5c, 0xb9, 0xec, 0xf8, 0x04, 0x17,
+	0xd2, 0xe8, 0x69, 0x56, 0xc6, 0xd1, 0xa8, 0x8d, 0x4f, 0xd0, 0x43, 0x9c, 0xfe, 0x2d, 0x69, 0xa6,
+	0x99, 0x1f, 0x6f, 0xc0, 0x55, 0x35, 0xc7, 0x22, 0x5f, 0xca, 0xcc, 0xf7, 0xf1, 0xd2, 0xf5, 0x71,
+	0x2d, 0xec, 0x6c, 0x71, 0xe8, 0xfc, 0xf3, 0xf2, 0x48, 0xa8, 0xea, 0x3b, 0x45, 0x0b, 0xe4, 0x30,
+	0xff, 0x06, 0x18, 0x55, 0xbe, 0x10, 0x6a, 0x2e, 0xcf, 0xf3, 0xd9, 0x1d, 0xad, 0xfe, 0x73, 0xe8,
+	0x29, 0x7f, 0x26, 0x8f, 0x7e, 0x1a, 0x30, 0x4f, 0xe0, 0x69, 0xed, 0xe1, 0x57, 0x6b, 0xa6, 0x15,
+	0xfa, 0x88, 0x6a, 0x03, 0xfd, 0x8e, 0x54, 0x98, 0xff, 0x1d, 0x41, 0x3c, 0x49, 0xce, 0x92, 0x89,
+	0x77, 0x7b, 0xfd, 0x76, 0x9d, 0xaf, 0xa6, 0x56, 0x16, 0x17, 0xba, 0x64, 0x6f, 0x00, 0x66, 0xc4,
+	0x86, 0x2f, 0xc0, 0x5e, 0xf2, 0x75, 0x3d, 0xb4, 0xff, 0x70, 0x3b, 0xf8, 0x49, 0x1a, 0x7d, 0xa5,
+	0x8f, 0xc4, 0x1c, 0xdd, 0xd2, 0x46, 0x08, 0xbc, 0xf2, 0x5c, 0x65, 0xf2, 0xfd, 0x2b, 0x3f, 0x2d,
+	0x8f, 0x02, 0x9f, 0xf8, 0x4f, 0x85, 0x47, 0xc8, 0xbb, 0x51, 0xfb, 0xaf, 0x84, 0x47, 0xfc, 0x47,
+	0xd8, 0xdd, 0x48, 0xc2, 0x76, 0xa1, 0x1f, 0x88, 0xe1, 0x47, 0x08, 0xd1, 0xa2, 0x91, 0x1b, 0x46,
+	0x6c, 0x07, 0x7a, 0x04, 0xd1, 0xd8, 0xe2, 0x7b, 0xee, 0x12, 0x7e, 0x59, 0xe7, 0x16, 0xf7, 0x90,
+	0x7f, 0xea, 0x56, 0xe4, 0x68, 0xfd, 0x80, 0xf2, 0x46, 0xce, 0x68, 0x23, 0xe7, 0x77, 0x00, 0xa1,
+	0x63, 0xcb, 0x18, 0x6c, 0xa9, 0xfa, 0x0e, 0xe8, 0x8c, 0xdc, 0x6c, 0x21, 0xac, 0xff, 0x1c, 0xd2,
+	0x99, 0xdf, 0xba, 0xb7, 0x74, 0x2a, 0x85, 0x51, 0x97, 0x77, 0xf9, 0x72, 0x89, 0xdb, 0x54, 0xe2,
+	0x21, 0x24, 0xa8, 0x20, 0xfe, 0x2e, 0xe8, 0x78, 0xa1, 0x73, 0x65, 0xfd, 0x84, 0x1a, 0x4c, 0xa3,
+	0xb2, 0xf6, 0x46, 0x65, 0xbf, 0xc2, 0x7e, 0xf3, 0x2e, 0x3e, 0x94, 0xa6, 0x0e, 0xd3, 0x6a, 0x86,
+	0xc1, 0x47, 0x45, 0x63, 0xf7, 0xd1, 0x1d, 0xe0, 0xdf, 0xd3, 0x52, 0x25, 0x93, 0x9b, 0x13, 0x69,
+	0x0f, 0x67, 0x8b, 0x5c, 0xde, 0xcb, 0x42, 0x2a, 0x8b, 0xc5, 0x0a, 0x07, 0x55, 0x48, 0xd1, 0x60,
+	0xf8, 0xe7, 0xf4, 0x8a, 0x9c, 0xdf, 0x95, 0x28, 0xef, 0x30, 0xad, 0x15, 0xe5, 0x5d, 0x3d, 0x57,
+	0x87, 0xf8, 0x93, 0x86, 0xf0, 0x32, 0x9f, 0xab, 0xdb, 0x6d, 0xfa, 0xa3, 0x7f, 0xfb, 0x4f, 0x00,
+	0x00, 0x00, 0xff, 0xff, 0x9a, 0xc1, 0x33, 0x3f, 0xde, 0x07, 0x00, 0x00,
 }

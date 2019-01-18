@@ -4,13 +4,12 @@ import (
 	"cmgateserver/gateserver"
 	"cmgateserver/gui"
 	"fmt"
-	"github.com/bianchengxiaobei/cmgo/log4g"
 	"github.com/lxn/walk"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"github.com/bianchengxiaobei/cmgo/log4g"
 )
 
 var (
@@ -44,11 +43,11 @@ func main() {
 		settingBtn := window.CreateSettingButton("网关session设置", ClickGateSessionConfig)
 		window.AddTabPageContent(1, settingBtn)
 		//日志
-		if logview, err := window.CreateLogView(); err != nil {
-			panic(err)
-		} else {
-			log.SetOutput(logview)
-		}
+		//if logview, err := window.CreateLogView(); err != nil {
+		//	panic(err)
+		//} else {
+		//	log.SetOutput(logview)
+		//}
 	}
 	window.SetSize(800, 600)
 	window.SetLayout(gui.VBoxLayout)
@@ -100,8 +99,8 @@ func ClickGateSessionConfig() {
 			com, _ := walk.NewComposite(dialog)
 			com.SetLayout(walk.NewGridLayout())
 			dialog.Children().Add(com)
-			v := reflect.ValueOf(server.UserClientServer.SessionConfig).Elem()
-			t := reflect.TypeOf(server.UserClientServer.SessionConfig).Elem()
+			v := reflect.ValueOf(server.UserClientServer.GetSessionConfig()).Elem()
+			t := reflect.TypeOf(server.UserClientServer.GetSessionConfig()).Elem()
 			count := v.NumField()
 			for i := 0; i < count; i++ {
 				f := v.Field(i)

@@ -9,6 +9,9 @@ type OnlineRole struct {
 	GateId   int32
 	UserName string
 }
+func (role *OnlineRole)GetRole() *bean.Role{
+	return &role.Role
+}
 func (role *OnlineRole)GetRoleId() int64{
 	return role.Role.RoleId
 }
@@ -51,4 +54,21 @@ func (role *OnlineRole)GetNickName()string{
 func (role *OnlineRole)SetNickName(nickName string){
 	role.Role.NickName = nickName
 }
-
+func (role *OnlineRole)GetGold()int32{
+	return role.Role.Gold
+}
+func (role *OnlineRole)SetGold(gold int32){
+	role.Role.Gold = gold
+}
+func (role *OnlineRole)GetExp()int32{
+	return role.Role.Exp
+}
+func (role *OnlineRole)SetExp(exp int32){
+	role.Role.Exp = exp
+}
+func (role *OnlineRole)GetLevel()int32{
+	return role.Role.Level
+}
+func (role *OnlineRole)SetLevel(level int32){
+	role.Role.Level = level
+}

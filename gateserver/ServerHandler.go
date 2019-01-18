@@ -17,8 +17,6 @@ type ServerMessageHandler struct {
 func (handler ServerMessageHandler) Init() {
 	handler.pool.Register(1000, &msgHandler.UserLoginHandler{GateServer: handler.gateServer})
 	handler.pool.Register(1002, &msgHandler.SelectCharacterHandler{GateServer: handler.gateServer})
-	handler.pool.Register(1003,&msgHandler.ChangeNickNameHandler{GateServer:handler.gateServer})
-	handler.pool.Register(1004,&msgHandler.ChangeAvatarIdHandler{GateServer:handler.gateServer})
 }
 
 func (handler ServerMessageHandler) MessageReceived(session network.SocketSessionInterface, message interface{}) error {
@@ -26,7 +24,7 @@ func (handler ServerMessageHandler) MessageReceived(session network.SocketSessio
 	if writeMsg, ok := message.(network.WriteMessage); !ok {
 		return errors.New("不是WriteMessage类型")
 	} else {
-		log4g.Infof("收到消息%d",writeMsg.MsgId)
+		//log4g.Infof("收到消息%d",writeMsg.MsgId)
 		msgHandler := handler.pool.GetHandler(int32(writeMsg.MsgId))
 		if msgHandler == nil {
 			//说明是直接发给游戏服务器的
@@ -67,7 +65,7 @@ func (handler ServerMessageHandler) SessionClosed(session network.SocketSessionI
 		id := roleId.(int64)
 		role := handler.gateServer.RoleManager.GetOnlineRole(id)
 		if role != nil{
-			handler.gateServer.RoleManager.QuitRole(id,-100)
+			handler.gateServer.RoleManager.QuitRoleNoClearCache(id,-100)
 			quit = true
 			handler.gateServer.RemoveRoleSession(id)
 		}
@@ -77,10 +75,13 @@ func (handler ServerMessageHandler) SessionClosed(session network.SocketSessionI
 		serverId := session.GetAttribute(network.SERVERID).(int32)
 		handler.gateServer.RemoveUserSession(id)
 		if quit == false{
-			handler.gateServer.RoleManager.QuitRole(-1000,serverId)
+			handler.gateServer.RoleManager.QuitRoleNoClearCache(-1000,serverId)
 		}
 	}
-	log4g.Infof("Session[%d]关闭!角色[%d]退出网关!", session.Id(),roleId.(int64))
+	if server, ok := handler.server.(*network.TcpServer); ok {
+		delete(server.Sessions, session.Id())
+		log4g.Infof("Session[%d]关闭!角色[%d]退出网关!", session.Id(),roleId.(int64))
+	}
 }
 
 func (handler ServerMessageHandler) SessionPeriod(session network.SocketSessionInterface) {
@@ -88,5 +89,5 @@ func (handler ServerMessageHandler) SessionPeriod(session network.SocketSessionI
 }
 
 func (handler ServerMessageHandler) ExceptionCaught(session network.SocketSessionInterface, err error) {
-
+	//log4g.Info(err.Error())
 }

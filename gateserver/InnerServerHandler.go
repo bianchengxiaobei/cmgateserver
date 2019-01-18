@@ -16,6 +16,8 @@ type InnnerServerMessageHandler struct {
 func (handler InnnerServerMessageHandler) Init() {
 	handler.pool.Register(10000, &msgHandler.RegisterGateHandler{GateServer: handler.gateServer})
 	handler.pool.Register(10002, &msgHandler.LoginSuccessHandler{GateServer: handler.gateServer})
+	handler.pool.Register(10005, &msgHandler.RoleQuitHandler{GateServer: handler.gateServer})
+	handler.pool.Register(10006, &msgHandler.CloseSessionHandler{GateServer: handler.gateServer})
 }
 
 func (handler InnnerServerMessageHandler) MessageReceived(session network.SocketSessionInterface, message interface{}) error {

@@ -26,8 +26,8 @@ type GateServer struct {
 	Id                    int
 	GateAddr              string
 	InnerAddr             string
-	UserClientServer      *network.TcpServer
-	InnerConnectServer    *network.TcpServer
+	UserClientServer      network.ISocket
+	InnerConnectServer    network.ISocket
 	IsRunning             bool
 	//玩家客户端通信列表，存的是网关与客户端的session
 	userSessions map[int64]network.SocketSessionInterface
@@ -68,8 +68,10 @@ func (server *GateServer) Init(gateBaseConfig string, gateConfig string, innerCo
 	LoadSessionConfig(server.gateServerConfigPath, &gateSessionConfig)
 	LoadSessionConfig(server.innerServerConfigPath, &innerSessionConfig)
 	server.LoadSessionConfig(server.gateBaseConfigPath)
-	server.UserClientServer = network.NewTcpServer("tcp4", &gateSessionConfig)
+	//server.UserClientServer = network.NewTcpServer("tcp4", &gateSessionConfig)
 	server.InnerConnectServer = network.NewTcpServer("tcp4", &innerSessionConfig)
+	server.UserClientServer = network.NewKcpServer(&gateSessionConfig)
+	//server.UserClientServer = network.NewP2PKcpServer(&gateSessionConfig)
 	//设置编解码
 	serverCodec = ServerProtocol{
 		pool: &ProtoMessagePool{
@@ -329,6 +331,8 @@ func (server *GateServer) RemoveRoleSession(roleId int64) {
 
 //取得玩家角色通信
 func (server *GateServer) GetRoleSession(roleId int64) (session network.SocketSessionInterface) {
+	//server.lock.Lock()
+	//defer server.lock.Unlock()
 	return server.roleSessions[roleId]
 }
 
@@ -374,9 +378,9 @@ func (server *GateServer) SendMsgToGameServerByRoleId(roleId int64, msgId int, m
 
 //网关转发消息到玩家客户端
 func (server *GateServer) SendMsgToClientByRoleId(roleId int64, msgId int, msg interface{}) error {
-	session := server.roleSessions[roleId]
+	session := server.GetRoleSession(roleId)
 	if session == nil {
-		log4g.Infof("玩家[%d]还未登录到游戏服务器!", roleId)
+		log4g.Infof("玩家[%d]还未登录到游戏服务器!消息Id[%d]", roleId,msgId)
 		return nil
 	} else {
 		if err := session.WriteMsg(msgId, msg); err != nil {

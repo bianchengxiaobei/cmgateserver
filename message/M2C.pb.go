@@ -21,7 +21,7 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 type Hero struct {
 	HeroId               int32    `protobuf:"varint,1,opt,name=heroId,proto3" json:"heroId,omitempty"`
 	Level                int32    `protobuf:"varint,2,opt,name=level,proto3" json:"level,omitempty"`
-	ItemIds              []int32  `protobuf:"varint,3,rep,packed,name=itemIds,proto3" json:"itemIds,omitempty"`
+	ItemIds              []*Item  `protobuf:"bytes,3,rep,name=itemIds,proto3" json:"itemIds,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -31,7 +31,7 @@ func (m *Hero) Reset()         { *m = Hero{} }
 func (m *Hero) String() string { return proto.CompactTextString(m) }
 func (*Hero) ProtoMessage()    {}
 func (*Hero) Descriptor() ([]byte, []int) {
-	return fileDescriptor_M2C_7ba8bff42f020a81, []int{0}
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{0}
 }
 func (m *Hero) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Hero.Unmarshal(m, b)
@@ -65,16 +65,87 @@ func (m *Hero) GetLevel() int32 {
 	return 0
 }
 
-func (m *Hero) GetItemIds() []int32 {
+func (m *Hero) GetItemIds() []*Item {
 	if m != nil {
 		return m.ItemIds
 	}
 	return nil
 }
 
+type FreeSoldierData struct {
+	PlayerType           int32    `protobuf:"varint,1,opt,name=playerType,proto3" json:"playerType,omitempty"`
+	CarrierType          int32    `protobuf:"varint,2,opt,name=carrierType,proto3" json:"carrierType,omitempty"`
+	TouKuiId             int32    `protobuf:"varint,3,opt,name=touKuiId,proto3" json:"touKuiId,omitempty"`
+	BodyId               int32    `protobuf:"varint,4,opt,name=bodyId,proto3" json:"bodyId,omitempty"`
+	WeapId               int32    `protobuf:"varint,5,opt,name=weapId,proto3" json:"weapId,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *FreeSoldierData) Reset()         { *m = FreeSoldierData{} }
+func (m *FreeSoldierData) String() string { return proto.CompactTextString(m) }
+func (*FreeSoldierData) ProtoMessage()    {}
+func (*FreeSoldierData) Descriptor() ([]byte, []int) {
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{1}
+}
+func (m *FreeSoldierData) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FreeSoldierData.Unmarshal(m, b)
+}
+func (m *FreeSoldierData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FreeSoldierData.Marshal(b, m, deterministic)
+}
+func (dst *FreeSoldierData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FreeSoldierData.Merge(dst, src)
+}
+func (m *FreeSoldierData) XXX_Size() int {
+	return xxx_messageInfo_FreeSoldierData.Size(m)
+}
+func (m *FreeSoldierData) XXX_DiscardUnknown() {
+	xxx_messageInfo_FreeSoldierData.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FreeSoldierData proto.InternalMessageInfo
+
+func (m *FreeSoldierData) GetPlayerType() int32 {
+	if m != nil {
+		return m.PlayerType
+	}
+	return 0
+}
+
+func (m *FreeSoldierData) GetCarrierType() int32 {
+	if m != nil {
+		return m.CarrierType
+	}
+	return 0
+}
+
+func (m *FreeSoldierData) GetTouKuiId() int32 {
+	if m != nil {
+		return m.TouKuiId
+	}
+	return 0
+}
+
+func (m *FreeSoldierData) GetBodyId() int32 {
+	if m != nil {
+		return m.BodyId
+	}
+	return 0
+}
+
+func (m *FreeSoldierData) GetWeapId() int32 {
+	if m != nil {
+		return m.WeapId
+	}
+	return 0
+}
+
 type Item struct {
 	ItemId               int32    `protobuf:"varint,1,opt,name=itemId,proto3" json:"itemId,omitempty"`
-	AttributeId          []int32  `protobuf:"varint,2,rep,packed,name=attributeId,proto3" json:"attributeId,omitempty"`
+	Index                int32    `protobuf:"varint,2,opt,name=index,proto3" json:"index,omitempty"`
+	AttributeId          []int32  `protobuf:"varint,3,rep,packed,name=attributeId,proto3" json:"attributeId,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -84,7 +155,7 @@ func (m *Item) Reset()         { *m = Item{} }
 func (m *Item) String() string { return proto.CompactTextString(m) }
 func (*Item) ProtoMessage()    {}
 func (*Item) Descriptor() ([]byte, []int) {
-	return fileDescriptor_M2C_7ba8bff42f020a81, []int{1}
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{2}
 }
 func (m *Item) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Item.Unmarshal(m, b)
@@ -111,6 +182,13 @@ func (m *Item) GetItemId() int32 {
 	return 0
 }
 
+func (m *Item) GetIndex() int32 {
+	if m != nil {
+		return m.Index
+	}
+	return 0
+}
+
 func (m *Item) GetAttributeId() []int32 {
 	if m != nil {
 		return m.AttributeId
@@ -118,54 +196,61 @@ func (m *Item) GetAttributeId() []int32 {
 	return nil
 }
 
-type M2C_GamePing struct {
+type M2C2M_GamePing struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *M2C_GamePing) Reset()         { *m = M2C_GamePing{} }
-func (m *M2C_GamePing) String() string { return proto.CompactTextString(m) }
-func (*M2C_GamePing) ProtoMessage()    {}
-func (*M2C_GamePing) Descriptor() ([]byte, []int) {
-	return fileDescriptor_M2C_7ba8bff42f020a81, []int{2}
+func (m *M2C2M_GamePing) Reset()         { *m = M2C2M_GamePing{} }
+func (m *M2C2M_GamePing) String() string { return proto.CompactTextString(m) }
+func (*M2C2M_GamePing) ProtoMessage()    {}
+func (*M2C2M_GamePing) Descriptor() ([]byte, []int) {
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{3}
 }
-func (m *M2C_GamePing) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_M2C_GamePing.Unmarshal(m, b)
+func (m *M2C2M_GamePing) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_M2C2M_GamePing.Unmarshal(m, b)
 }
-func (m *M2C_GamePing) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_M2C_GamePing.Marshal(b, m, deterministic)
+func (m *M2C2M_GamePing) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_M2C2M_GamePing.Marshal(b, m, deterministic)
 }
-func (dst *M2C_GamePing) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_M2C_GamePing.Merge(dst, src)
+func (dst *M2C2M_GamePing) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_M2C2M_GamePing.Merge(dst, src)
 }
-func (m *M2C_GamePing) XXX_Size() int {
-	return xxx_messageInfo_M2C_GamePing.Size(m)
+func (m *M2C2M_GamePing) XXX_Size() int {
+	return xxx_messageInfo_M2C2M_GamePing.Size(m)
 }
-func (m *M2C_GamePing) XXX_DiscardUnknown() {
-	xxx_messageInfo_M2C_GamePing.DiscardUnknown(m)
+func (m *M2C2M_GamePing) XXX_DiscardUnknown() {
+	xxx_messageInfo_M2C2M_GamePing.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_M2C_GamePing proto.InternalMessageInfo
+var xxx_messageInfo_M2C2M_GamePing proto.InternalMessageInfo
 
 // 大厅数据
 type M2C_EnterLobby struct {
-	IsInBattle bool `protobuf:"varint,1,opt,name=isInBattle,proto3" json:"isInBattle,omitempty"`
+	RoomId int32 `protobuf:"varint,1,opt,name=roomId,proto3" json:"roomId,omitempty"`
 	// 玩家数据
 	RoleBasicInfo *Role `protobuf:"bytes,2,opt,name=roleBasicInfo,proto3" json:"roleBasicInfo,omitempty"`
 	// 玩家英雄数据
-	HeroInfo             []*Hero  `protobuf:"bytes,3,rep,name=heroInfo,proto3" json:"heroInfo,omitempty"`
-	Items                []*Item  `protobuf:"bytes,4,rep,name=items,proto3" json:"items,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	HeroInfo             []*Hero          `protobuf:"bytes,3,rep,name=heroInfo,proto3" json:"heroInfo,omitempty"`
+	Items                []*Item          `protobuf:"bytes,4,rep,name=items,proto3" json:"items,omitempty"`
+	BattleId             int32            `protobuf:"varint,5,opt,name=battleId,proto3" json:"battleId,omitempty"`
+	TaskSeed             int32            `protobuf:"varint,6,opt,name=taskSeed,proto3" json:"taskSeed,omitempty"`
+	Version              string           `protobuf:"bytes,7,opt,name=version,proto3" json:"version,omitempty"`
+	Arrower              *FreeSoldierData `protobuf:"bytes,8,opt,name=arrower,proto3" json:"arrower,omitempty"`
+	Daodun               *FreeSoldierData `protobuf:"bytes,9,opt,name=daodun,proto3" json:"daodun,omitempty"`
+	Spear                *FreeSoldierData `protobuf:"bytes,10,opt,name=spear,proto3" json:"spear,omitempty"`
+	Fashi                *FreeSoldierData `protobuf:"bytes,11,opt,name=fashi,proto3" json:"fashi,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
 }
 
 func (m *M2C_EnterLobby) Reset()         { *m = M2C_EnterLobby{} }
 func (m *M2C_EnterLobby) String() string { return proto.CompactTextString(m) }
 func (*M2C_EnterLobby) ProtoMessage()    {}
 func (*M2C_EnterLobby) Descriptor() ([]byte, []int) {
-	return fileDescriptor_M2C_7ba8bff42f020a81, []int{3}
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{4}
 }
 func (m *M2C_EnterLobby) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_M2C_EnterLobby.Unmarshal(m, b)
@@ -185,11 +270,11 @@ func (m *M2C_EnterLobby) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_M2C_EnterLobby proto.InternalMessageInfo
 
-func (m *M2C_EnterLobby) GetIsInBattle() bool {
+func (m *M2C_EnterLobby) GetRoomId() int32 {
 	if m != nil {
-		return m.IsInBattle
+		return m.RoomId
 	}
-	return false
+	return 0
 }
 
 func (m *M2C_EnterLobby) GetRoleBasicInfo() *Role {
@@ -213,6 +298,55 @@ func (m *M2C_EnterLobby) GetItems() []*Item {
 	return nil
 }
 
+func (m *M2C_EnterLobby) GetBattleId() int32 {
+	if m != nil {
+		return m.BattleId
+	}
+	return 0
+}
+
+func (m *M2C_EnterLobby) GetTaskSeed() int32 {
+	if m != nil {
+		return m.TaskSeed
+	}
+	return 0
+}
+
+func (m *M2C_EnterLobby) GetVersion() string {
+	if m != nil {
+		return m.Version
+	}
+	return ""
+}
+
+func (m *M2C_EnterLobby) GetArrower() *FreeSoldierData {
+	if m != nil {
+		return m.Arrower
+	}
+	return nil
+}
+
+func (m *M2C_EnterLobby) GetDaodun() *FreeSoldierData {
+	if m != nil {
+		return m.Daodun
+	}
+	return nil
+}
+
+func (m *M2C_EnterLobby) GetSpear() *FreeSoldierData {
+	if m != nil {
+		return m.Spear
+	}
+	return nil
+}
+
+func (m *M2C_EnterLobby) GetFashi() *FreeSoldierData {
+	if m != nil {
+		return m.Fashi
+	}
+	return nil
+}
+
 // 刷新房间列表
 type M2C_RefreshRoomList struct {
 	RoomList             []*Room  `protobuf:"bytes,1,rep,name=roomList,proto3" json:"roomList,omitempty"`
@@ -225,7 +359,7 @@ func (m *M2C_RefreshRoomList) Reset()         { *m = M2C_RefreshRoomList{} }
 func (m *M2C_RefreshRoomList) String() string { return proto.CompactTextString(m) }
 func (*M2C_RefreshRoomList) ProtoMessage()    {}
 func (*M2C_RefreshRoomList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_M2C_7ba8bff42f020a81, []int{4}
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{5}
 }
 func (m *M2C_RefreshRoomList) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_M2C_RefreshRoomList.Unmarshal(m, b)
@@ -254,21 +388,19 @@ func (m *M2C_RefreshRoomList) GetRoomList() []*Room {
 
 // 改变Room状态信息
 type M2C_JoinRoom struct {
-	JoinerId             int64    `protobuf:"varint,1,opt,name=joinerId,proto3" json:"joinerId,omitempty"`
-	JoinerName           string   `protobuf:"bytes,2,opt,name=joinerName,proto3" json:"joinerName,omitempty"`
-	JoinerIconId         int32    `protobuf:"varint,3,opt,name=joinerIconId,proto3" json:"joinerIconId,omitempty"`
-	GroupId              int32    `protobuf:"varint,4,opt,name=groupId,proto3" json:"groupId,omitempty"`
-	RoomId               int32    `protobuf:"varint,5,opt,name=roomId,proto3" json:"roomId,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Member               *RoomMember  `protobuf:"bytes,1,opt,name=member,proto3" json:"member,omitempty"`
+	RoomId               int32        `protobuf:"varint,2,opt,name=roomId,proto3" json:"roomId,omitempty"`
+	RoomSetting          *RoomSetting `protobuf:"bytes,3,opt,name=roomSetting,proto3" json:"roomSetting,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
 }
 
 func (m *M2C_JoinRoom) Reset()         { *m = M2C_JoinRoom{} }
 func (m *M2C_JoinRoom) String() string { return proto.CompactTextString(m) }
 func (*M2C_JoinRoom) ProtoMessage()    {}
 func (*M2C_JoinRoom) Descriptor() ([]byte, []int) {
-	return fileDescriptor_M2C_7ba8bff42f020a81, []int{5}
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{6}
 }
 func (m *M2C_JoinRoom) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_M2C_JoinRoom.Unmarshal(m, b)
@@ -288,32 +420,11 @@ func (m *M2C_JoinRoom) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_M2C_JoinRoom proto.InternalMessageInfo
 
-func (m *M2C_JoinRoom) GetJoinerId() int64 {
+func (m *M2C_JoinRoom) GetMember() *RoomMember {
 	if m != nil {
-		return m.JoinerId
+		return m.Member
 	}
-	return 0
-}
-
-func (m *M2C_JoinRoom) GetJoinerName() string {
-	if m != nil {
-		return m.JoinerName
-	}
-	return ""
-}
-
-func (m *M2C_JoinRoom) GetJoinerIconId() int32 {
-	if m != nil {
-		return m.JoinerIconId
-	}
-	return 0
-}
-
-func (m *M2C_JoinRoom) GetGroupId() int32 {
-	if m != nil {
-		return m.GroupId
-	}
-	return 0
+	return nil
 }
 
 func (m *M2C_JoinRoom) GetRoomId() int32 {
@@ -321,6 +432,60 @@ func (m *M2C_JoinRoom) GetRoomId() int32 {
 		return m.RoomId
 	}
 	return 0
+}
+
+func (m *M2C_JoinRoom) GetRoomSetting() *RoomSetting {
+	if m != nil {
+		return m.RoomSetting
+	}
+	return nil
+}
+
+// 房间设置
+type RoomSetting struct {
+	MapId                int32    `protobuf:"varint,1,opt,name=mapId,proto3" json:"mapId,omitempty"`
+	IsWarFow             bool     `protobuf:"varint,2,opt,name=isWarFow,proto3" json:"isWarFow,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RoomSetting) Reset()         { *m = RoomSetting{} }
+func (m *RoomSetting) String() string { return proto.CompactTextString(m) }
+func (*RoomSetting) ProtoMessage()    {}
+func (*RoomSetting) Descriptor() ([]byte, []int) {
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{7}
+}
+func (m *RoomSetting) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RoomSetting.Unmarshal(m, b)
+}
+func (m *RoomSetting) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RoomSetting.Marshal(b, m, deterministic)
+}
+func (dst *RoomSetting) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RoomSetting.Merge(dst, src)
+}
+func (m *RoomSetting) XXX_Size() int {
+	return xxx_messageInfo_RoomSetting.Size(m)
+}
+func (m *RoomSetting) XXX_DiscardUnknown() {
+	xxx_messageInfo_RoomSetting.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RoomSetting proto.InternalMessageInfo
+
+func (m *RoomSetting) GetMapId() int32 {
+	if m != nil {
+		return m.MapId
+	}
+	return 0
+}
+
+func (m *RoomSetting) GetIsWarFow() bool {
+	if m != nil {
+		return m.IsWarFow
+	}
+	return false
 }
 
 // 准备成功
@@ -336,7 +501,7 @@ func (m *M2C_ReadySuccess) Reset()         { *m = M2C_ReadySuccess{} }
 func (m *M2C_ReadySuccess) String() string { return proto.CompactTextString(m) }
 func (*M2C_ReadySuccess) ProtoMessage()    {}
 func (*M2C_ReadySuccess) Descriptor() ([]byte, []int) {
-	return fileDescriptor_M2C_7ba8bff42f020a81, []int{6}
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{8}
 }
 func (m *M2C_ReadySuccess) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_M2C_ReadySuccess.Unmarshal(m, b)
@@ -373,6 +538,7 @@ func (m *M2C_ReadySuccess) GetReady() bool {
 // 开始战斗加载
 type M2C_StartBattleLoad struct {
 	AllReady             bool     `protobuf:"varint,1,opt,name=allReady,proto3" json:"allReady,omitempty"`
+	Seed                 int32    `protobuf:"varint,2,opt,name=seed,proto3" json:"seed,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -382,7 +548,7 @@ func (m *M2C_StartBattleLoad) Reset()         { *m = M2C_StartBattleLoad{} }
 func (m *M2C_StartBattleLoad) String() string { return proto.CompactTextString(m) }
 func (*M2C_StartBattleLoad) ProtoMessage()    {}
 func (*M2C_StartBattleLoad) Descriptor() ([]byte, []int) {
-	return fileDescriptor_M2C_7ba8bff42f020a81, []int{7}
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{9}
 }
 func (m *M2C_StartBattleLoad) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_M2C_StartBattleLoad.Unmarshal(m, b)
@@ -409,6 +575,13 @@ func (m *M2C_StartBattleLoad) GetAllReady() bool {
 	return false
 }
 
+func (m *M2C_StartBattleLoad) GetSeed() int32 {
+	if m != nil {
+		return m.Seed
+	}
+	return 0
+}
+
 // 开始战斗
 type M2C_StartBattle struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -420,7 +593,7 @@ func (m *M2C_StartBattle) Reset()         { *m = M2C_StartBattle{} }
 func (m *M2C_StartBattle) String() string { return proto.CompactTextString(m) }
 func (*M2C_StartBattle) ProtoMessage()    {}
 func (*M2C_StartBattle) Descriptor() ([]byte, []int) {
-	return fileDescriptor_M2C_7ba8bff42f020a81, []int{8}
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{10}
 }
 func (m *M2C_StartBattle) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_M2C_StartBattle.Unmarshal(m, b)
@@ -453,7 +626,7 @@ func (m *M2C_BattleFrame) Reset()         { *m = M2C_BattleFrame{} }
 func (m *M2C_BattleFrame) String() string { return proto.CompactTextString(m) }
 func (*M2C_BattleFrame) ProtoMessage()    {}
 func (*M2C_BattleFrame) Descriptor() ([]byte, []int) {
-	return fileDescriptor_M2C_7ba8bff42f020a81, []int{9}
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{11}
 }
 func (m *M2C_BattleFrame) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_M2C_BattleFrame.Unmarshal(m, b)
@@ -499,7 +672,7 @@ func (m *M2C_RoomDelete) Reset()         { *m = M2C_RoomDelete{} }
 func (m *M2C_RoomDelete) String() string { return proto.CompactTextString(m) }
 func (*M2C_RoomDelete) ProtoMessage()    {}
 func (*M2C_RoomDelete) Descriptor() ([]byte, []int) {
-	return fileDescriptor_M2C_7ba8bff42f020a81, []int{10}
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{12}
 }
 func (m *M2C_RoomDelete) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_M2C_RoomDelete.Unmarshal(m, b)
@@ -539,7 +712,7 @@ func (m *M2C_RoleQuitRoom) Reset()         { *m = M2C_RoleQuitRoom{} }
 func (m *M2C_RoleQuitRoom) String() string { return proto.CompactTextString(m) }
 func (*M2C_RoleQuitRoom) ProtoMessage()    {}
 func (*M2C_RoleQuitRoom) Descriptor() ([]byte, []int) {
-	return fileDescriptor_M2C_7ba8bff42f020a81, []int{11}
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{13}
 }
 func (m *M2C_RoleQuitRoom) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_M2C_RoleQuitRoom.Unmarshal(m, b)
@@ -573,55 +746,518 @@ func (m *M2C_RoleQuitRoom) GetRoomId() int32 {
 	return 0
 }
 
+// 战役结果
+type M2C_BattleResult struct {
+	Gold                 int32    `protobuf:"varint,1,opt,name=gold,proto3" json:"gold,omitempty"`
+	Exp                  int32    `protobuf:"varint,2,opt,name=exp,proto3" json:"exp,omitempty"`
+	HeroIds              []int32  `protobuf:"varint,3,rep,packed,name=heroIds,proto3" json:"heroIds,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *M2C_BattleResult) Reset()         { *m = M2C_BattleResult{} }
+func (m *M2C_BattleResult) String() string { return proto.CompactTextString(m) }
+func (*M2C_BattleResult) ProtoMessage()    {}
+func (*M2C_BattleResult) Descriptor() ([]byte, []int) {
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{14}
+}
+func (m *M2C_BattleResult) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_M2C_BattleResult.Unmarshal(m, b)
+}
+func (m *M2C_BattleResult) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_M2C_BattleResult.Marshal(b, m, deterministic)
+}
+func (dst *M2C_BattleResult) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_M2C_BattleResult.Merge(dst, src)
+}
+func (m *M2C_BattleResult) XXX_Size() int {
+	return xxx_messageInfo_M2C_BattleResult.Size(m)
+}
+func (m *M2C_BattleResult) XXX_DiscardUnknown() {
+	xxx_messageInfo_M2C_BattleResult.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_M2C_BattleResult proto.InternalMessageInfo
+
+func (m *M2C_BattleResult) GetGold() int32 {
+	if m != nil {
+		return m.Gold
+	}
+	return 0
+}
+
+func (m *M2C_BattleResult) GetExp() int32 {
+	if m != nil {
+		return m.Exp
+	}
+	return 0
+}
+
+func (m *M2C_BattleResult) GetHeroIds() []int32 {
+	if m != nil {
+		return m.HeroIds
+	}
+	return nil
+}
+
+// 观看广告结果
+type M2C_WatchAdsResult struct {
+	Gold                 int32    `protobuf:"varint,1,opt,name=gold,proto3" json:"gold,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *M2C_WatchAdsResult) Reset()         { *m = M2C_WatchAdsResult{} }
+func (m *M2C_WatchAdsResult) String() string { return proto.CompactTextString(m) }
+func (*M2C_WatchAdsResult) ProtoMessage()    {}
+func (*M2C_WatchAdsResult) Descriptor() ([]byte, []int) {
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{15}
+}
+func (m *M2C_WatchAdsResult) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_M2C_WatchAdsResult.Unmarshal(m, b)
+}
+func (m *M2C_WatchAdsResult) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_M2C_WatchAdsResult.Marshal(b, m, deterministic)
+}
+func (dst *M2C_WatchAdsResult) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_M2C_WatchAdsResult.Merge(dst, src)
+}
+func (m *M2C_WatchAdsResult) XXX_Size() int {
+	return xxx_messageInfo_M2C_WatchAdsResult.Size(m)
+}
+func (m *M2C_WatchAdsResult) XXX_DiscardUnknown() {
+	xxx_messageInfo_M2C_WatchAdsResult.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_M2C_WatchAdsResult proto.InternalMessageInfo
+
+func (m *M2C_WatchAdsResult) GetGold() int32 {
+	if m != nil {
+		return m.Gold
+	}
+	return 0
+}
+
+// 修改昵称结果
+type M2C_ChangeNickName struct {
+	ResultName           string   `protobuf:"bytes,1,opt,name=resultName,proto3" json:"resultName,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *M2C_ChangeNickName) Reset()         { *m = M2C_ChangeNickName{} }
+func (m *M2C_ChangeNickName) String() string { return proto.CompactTextString(m) }
+func (*M2C_ChangeNickName) ProtoMessage()    {}
+func (*M2C_ChangeNickName) Descriptor() ([]byte, []int) {
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{16}
+}
+func (m *M2C_ChangeNickName) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_M2C_ChangeNickName.Unmarshal(m, b)
+}
+func (m *M2C_ChangeNickName) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_M2C_ChangeNickName.Marshal(b, m, deterministic)
+}
+func (dst *M2C_ChangeNickName) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_M2C_ChangeNickName.Merge(dst, src)
+}
+func (m *M2C_ChangeNickName) XXX_Size() int {
+	return xxx_messageInfo_M2C_ChangeNickName.Size(m)
+}
+func (m *M2C_ChangeNickName) XXX_DiscardUnknown() {
+	xxx_messageInfo_M2C_ChangeNickName.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_M2C_ChangeNickName proto.InternalMessageInfo
+
+func (m *M2C_ChangeNickName) GetResultName() string {
+	if m != nil {
+		return m.ResultName
+	}
+	return ""
+}
+
+// 修改头像结果
+type M2C_ChangeAvatarIcon struct {
+	AvatarId             int32    `protobuf:"varint,1,opt,name=avatarId,proto3" json:"avatarId,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *M2C_ChangeAvatarIcon) Reset()         { *m = M2C_ChangeAvatarIcon{} }
+func (m *M2C_ChangeAvatarIcon) String() string { return proto.CompactTextString(m) }
+func (*M2C_ChangeAvatarIcon) ProtoMessage()    {}
+func (*M2C_ChangeAvatarIcon) Descriptor() ([]byte, []int) {
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{17}
+}
+func (m *M2C_ChangeAvatarIcon) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_M2C_ChangeAvatarIcon.Unmarshal(m, b)
+}
+func (m *M2C_ChangeAvatarIcon) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_M2C_ChangeAvatarIcon.Marshal(b, m, deterministic)
+}
+func (dst *M2C_ChangeAvatarIcon) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_M2C_ChangeAvatarIcon.Merge(dst, src)
+}
+func (m *M2C_ChangeAvatarIcon) XXX_Size() int {
+	return xxx_messageInfo_M2C_ChangeAvatarIcon.Size(m)
+}
+func (m *M2C_ChangeAvatarIcon) XXX_DiscardUnknown() {
+	xxx_messageInfo_M2C_ChangeAvatarIcon.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_M2C_ChangeAvatarIcon proto.InternalMessageInfo
+
+func (m *M2C_ChangeAvatarIcon) GetAvatarId() int32 {
+	if m != nil {
+		return m.AvatarId
+	}
+	return 0
+}
+
+// 重连战斗数据
+type M2C_ReBattleConnect struct {
+	RoomInfo *Room `protobuf:"bytes,1,opt,name=roomInfo,proto3" json:"roomInfo,omitempty"`
+	// RoomSetting roomSetting = 2
+	Commands             []*SaveCommandList `protobuf:"bytes,2,rep,name=commands,proto3" json:"commands,omitempty"`
+	Seed                 int32              `protobuf:"varint,3,opt,name=seed,proto3" json:"seed,omitempty"`
+	FrameCount           int32              `protobuf:"varint,4,opt,name=frameCount,proto3" json:"frameCount,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
+}
+
+func (m *M2C_ReBattleConnect) Reset()         { *m = M2C_ReBattleConnect{} }
+func (m *M2C_ReBattleConnect) String() string { return proto.CompactTextString(m) }
+func (*M2C_ReBattleConnect) ProtoMessage()    {}
+func (*M2C_ReBattleConnect) Descriptor() ([]byte, []int) {
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{18}
+}
+func (m *M2C_ReBattleConnect) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_M2C_ReBattleConnect.Unmarshal(m, b)
+}
+func (m *M2C_ReBattleConnect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_M2C_ReBattleConnect.Marshal(b, m, deterministic)
+}
+func (dst *M2C_ReBattleConnect) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_M2C_ReBattleConnect.Merge(dst, src)
+}
+func (m *M2C_ReBattleConnect) XXX_Size() int {
+	return xxx_messageInfo_M2C_ReBattleConnect.Size(m)
+}
+func (m *M2C_ReBattleConnect) XXX_DiscardUnknown() {
+	xxx_messageInfo_M2C_ReBattleConnect.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_M2C_ReBattleConnect proto.InternalMessageInfo
+
+func (m *M2C_ReBattleConnect) GetRoomInfo() *Room {
+	if m != nil {
+		return m.RoomInfo
+	}
+	return nil
+}
+
+func (m *M2C_ReBattleConnect) GetCommands() []*SaveCommandList {
+	if m != nil {
+		return m.Commands
+	}
+	return nil
+}
+
+func (m *M2C_ReBattleConnect) GetSeed() int32 {
+	if m != nil {
+		return m.Seed
+	}
+	return 0
+}
+
+func (m *M2C_ReBattleConnect) GetFrameCount() int32 {
+	if m != nil {
+		return m.FrameCount
+	}
+	return 0
+}
+
+// 重连房间数据
+type M2C_ReRoomConnect struct {
+	RoomInfo             *Room    `protobuf:"bytes,1,opt,name=roomInfo,proto3" json:"roomInfo,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *M2C_ReRoomConnect) Reset()         { *m = M2C_ReRoomConnect{} }
+func (m *M2C_ReRoomConnect) String() string { return proto.CompactTextString(m) }
+func (*M2C_ReRoomConnect) ProtoMessage()    {}
+func (*M2C_ReRoomConnect) Descriptor() ([]byte, []int) {
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{19}
+}
+func (m *M2C_ReRoomConnect) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_M2C_ReRoomConnect.Unmarshal(m, b)
+}
+func (m *M2C_ReRoomConnect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_M2C_ReRoomConnect.Marshal(b, m, deterministic)
+}
+func (dst *M2C_ReRoomConnect) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_M2C_ReRoomConnect.Merge(dst, src)
+}
+func (m *M2C_ReRoomConnect) XXX_Size() int {
+	return xxx_messageInfo_M2C_ReRoomConnect.Size(m)
+}
+func (m *M2C_ReRoomConnect) XXX_DiscardUnknown() {
+	xxx_messageInfo_M2C_ReRoomConnect.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_M2C_ReRoomConnect proto.InternalMessageInfo
+
+func (m *M2C_ReRoomConnect) GetRoomInfo() *Room {
+	if m != nil {
+		return m.RoomInfo
+	}
+	return nil
+}
+
+// 重连帧数
+type SaveCommandList struct {
+	FrameIndex           int32      `protobuf:"varint,1,opt,name=frameIndex,proto3" json:"frameIndex,omitempty"`
+	Cmds                 []*Command `protobuf:"bytes,2,rep,name=cmds,proto3" json:"cmds,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
+}
+
+func (m *SaveCommandList) Reset()         { *m = SaveCommandList{} }
+func (m *SaveCommandList) String() string { return proto.CompactTextString(m) }
+func (*SaveCommandList) ProtoMessage()    {}
+func (*SaveCommandList) Descriptor() ([]byte, []int) {
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{20}
+}
+func (m *SaveCommandList) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SaveCommandList.Unmarshal(m, b)
+}
+func (m *SaveCommandList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SaveCommandList.Marshal(b, m, deterministic)
+}
+func (dst *SaveCommandList) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SaveCommandList.Merge(dst, src)
+}
+func (m *SaveCommandList) XXX_Size() int {
+	return xxx_messageInfo_SaveCommandList.Size(m)
+}
+func (m *SaveCommandList) XXX_DiscardUnknown() {
+	xxx_messageInfo_SaveCommandList.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SaveCommandList proto.InternalMessageInfo
+
+func (m *SaveCommandList) GetFrameIndex() int32 {
+	if m != nil {
+		return m.FrameIndex
+	}
+	return 0
+}
+
+func (m *SaveCommandList) GetCmds() []*Command {
+	if m != nil {
+		return m.Cmds
+	}
+	return nil
+}
+
+// 买英雄结果
+type M2C_BuyHeroResult struct {
+	HeroId               int32    `protobuf:"varint,1,opt,name=heroId,proto3" json:"heroId,omitempty"`
+	ResultCode           int32    `protobuf:"varint,2,opt,name=resultCode,proto3" json:"resultCode,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *M2C_BuyHeroResult) Reset()         { *m = M2C_BuyHeroResult{} }
+func (m *M2C_BuyHeroResult) String() string { return proto.CompactTextString(m) }
+func (*M2C_BuyHeroResult) ProtoMessage()    {}
+func (*M2C_BuyHeroResult) Descriptor() ([]byte, []int) {
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{21}
+}
+func (m *M2C_BuyHeroResult) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_M2C_BuyHeroResult.Unmarshal(m, b)
+}
+func (m *M2C_BuyHeroResult) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_M2C_BuyHeroResult.Marshal(b, m, deterministic)
+}
+func (dst *M2C_BuyHeroResult) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_M2C_BuyHeroResult.Merge(dst, src)
+}
+func (m *M2C_BuyHeroResult) XXX_Size() int {
+	return xxx_messageInfo_M2C_BuyHeroResult.Size(m)
+}
+func (m *M2C_BuyHeroResult) XXX_DiscardUnknown() {
+	xxx_messageInfo_M2C_BuyHeroResult.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_M2C_BuyHeroResult proto.InternalMessageInfo
+
+func (m *M2C_BuyHeroResult) GetHeroId() int32 {
+	if m != nil {
+		return m.HeroId
+	}
+	return 0
+}
+
+func (m *M2C_BuyHeroResult) GetResultCode() int32 {
+	if m != nil {
+		return m.ResultCode
+	}
+	return 0
+}
+
+// 学习结果
+type M2C_LearnSkillResult struct {
+	SkillId              int32    `protobuf:"varint,1,opt,name=skillId,proto3" json:"skillId,omitempty"`
+	HeroId               int32    `protobuf:"varint,2,opt,name=heroId,proto3" json:"heroId,omitempty"`
+	SkillPoint           int32    `protobuf:"varint,3,opt,name=skillPoint,proto3" json:"skillPoint,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *M2C_LearnSkillResult) Reset()         { *m = M2C_LearnSkillResult{} }
+func (m *M2C_LearnSkillResult) String() string { return proto.CompactTextString(m) }
+func (*M2C_LearnSkillResult) ProtoMessage()    {}
+func (*M2C_LearnSkillResult) Descriptor() ([]byte, []int) {
+	return fileDescriptor_M2C_a7347fb6c83972fe, []int{22}
+}
+func (m *M2C_LearnSkillResult) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_M2C_LearnSkillResult.Unmarshal(m, b)
+}
+func (m *M2C_LearnSkillResult) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_M2C_LearnSkillResult.Marshal(b, m, deterministic)
+}
+func (dst *M2C_LearnSkillResult) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_M2C_LearnSkillResult.Merge(dst, src)
+}
+func (m *M2C_LearnSkillResult) XXX_Size() int {
+	return xxx_messageInfo_M2C_LearnSkillResult.Size(m)
+}
+func (m *M2C_LearnSkillResult) XXX_DiscardUnknown() {
+	xxx_messageInfo_M2C_LearnSkillResult.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_M2C_LearnSkillResult proto.InternalMessageInfo
+
+func (m *M2C_LearnSkillResult) GetSkillId() int32 {
+	if m != nil {
+		return m.SkillId
+	}
+	return 0
+}
+
+func (m *M2C_LearnSkillResult) GetHeroId() int32 {
+	if m != nil {
+		return m.HeroId
+	}
+	return 0
+}
+
+func (m *M2C_LearnSkillResult) GetSkillPoint() int32 {
+	if m != nil {
+		return m.SkillPoint
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*Hero)(nil), "message.Hero")
+	proto.RegisterType((*FreeSoldierData)(nil), "message.FreeSoldierData")
 	proto.RegisterType((*Item)(nil), "message.Item")
-	proto.RegisterType((*M2C_GamePing)(nil), "message.M2C_GamePing")
+	proto.RegisterType((*M2C2M_GamePing)(nil), "message.M2C2M_GamePing")
 	proto.RegisterType((*M2C_EnterLobby)(nil), "message.M2C_EnterLobby")
 	proto.RegisterType((*M2C_RefreshRoomList)(nil), "message.M2C_RefreshRoomList")
 	proto.RegisterType((*M2C_JoinRoom)(nil), "message.M2C_JoinRoom")
+	proto.RegisterType((*RoomSetting)(nil), "message.RoomSetting")
 	proto.RegisterType((*M2C_ReadySuccess)(nil), "message.M2C_ReadySuccess")
 	proto.RegisterType((*M2C_StartBattleLoad)(nil), "message.M2C_StartBattleLoad")
 	proto.RegisterType((*M2C_StartBattle)(nil), "message.M2C_StartBattle")
 	proto.RegisterType((*M2C_BattleFrame)(nil), "message.M2C_BattleFrame")
 	proto.RegisterType((*M2C_RoomDelete)(nil), "message.M2C_RoomDelete")
 	proto.RegisterType((*M2C_RoleQuitRoom)(nil), "message.M2C_RoleQuitRoom")
+	proto.RegisterType((*M2C_BattleResult)(nil), "message.M2C_BattleResult")
+	proto.RegisterType((*M2C_WatchAdsResult)(nil), "message.M2C_WatchAdsResult")
+	proto.RegisterType((*M2C_ChangeNickName)(nil), "message.M2C_ChangeNickName")
+	proto.RegisterType((*M2C_ChangeAvatarIcon)(nil), "message.M2C_ChangeAvatarIcon")
+	proto.RegisterType((*M2C_ReBattleConnect)(nil), "message.M2C_ReBattleConnect")
+	proto.RegisterType((*M2C_ReRoomConnect)(nil), "message.M2C_ReRoomConnect")
+	proto.RegisterType((*SaveCommandList)(nil), "message.SaveCommandList")
+	proto.RegisterType((*M2C_BuyHeroResult)(nil), "message.M2C_BuyHeroResult")
+	proto.RegisterType((*M2C_LearnSkillResult)(nil), "message.M2C_LearnSkillResult")
 }
 
-func init() { proto.RegisterFile("M2C.proto", fileDescriptor_M2C_7ba8bff42f020a81) }
+func init() { proto.RegisterFile("M2C.proto", fileDescriptor_M2C_a7347fb6c83972fe) }
 
-var fileDescriptor_M2C_7ba8bff42f020a81 = []byte{
-	// 501 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x53, 0x4d, 0x6f, 0x13, 0x31,
-	0x10, 0xd5, 0xe6, 0xa3, 0x4d, 0x26, 0x6d, 0x29, 0x06, 0x21, 0x2b, 0x87, 0x2a, 0x32, 0x97, 0x70,
-	0x89, 0x44, 0xfa, 0x07, 0xa2, 0x04, 0x28, 0x8b, 0x92, 0x0a, 0x5c, 0x71, 0x46, 0x4e, 0x76, 0x92,
-	0x2e, 0xf2, 0xae, 0x2b, 0xdb, 0x41, 0xea, 0xbf, 0xe1, 0x4f, 0xf0, 0xff, 0xd0, 0xd8, 0x9b, 0x65,
-	0x13, 0x89, 0x9b, 0xdf, 0x9b, 0xf1, 0xec, 0xbc, 0xf7, 0xbc, 0xd0, 0x5f, 0x4d, 0x17, 0x93, 0x27,
-	0x6b, 0xbc, 0x61, 0xe7, 0x05, 0x3a, 0xa7, 0x76, 0x38, 0xec, 0x2f, 0xa6, 0xab, 0xc8, 0x0d, 0xfb,
-	0x77, 0x87, 0xb2, 0xb8, 0x87, 0xce, 0x67, 0xb4, 0x86, 0xbd, 0x81, 0xb3, 0x47, 0xb4, 0x26, 0xcd,
-	0x78, 0x32, 0x4a, 0xc6, 0x5d, 0x59, 0x21, 0xf6, 0x1a, 0xba, 0x1a, 0x7f, 0xa1, 0xe6, 0xad, 0x40,
-	0x47, 0xc0, 0x38, 0x9c, 0xe7, 0x1e, 0x8b, 0x34, 0x73, 0xbc, 0x3d, 0x6a, 0x8f, 0xbb, 0xf2, 0x00,
-	0xc5, 0x0c, 0x3a, 0xa9, 0xc7, 0x82, 0xe6, 0x45, 0xea, 0x30, 0x2f, 0x22, 0x36, 0x82, 0x81, 0xf2,
-	0xde, 0xe6, 0xeb, 0xbd, 0xc7, 0x34, 0xe3, 0xad, 0x70, 0xbb, 0x49, 0x89, 0x2b, 0xb8, 0x58, 0x4d,
-	0x17, 0x3f, 0xee, 0x54, 0x81, 0x5f, 0xf3, 0x72, 0x27, 0xfe, 0x24, 0x70, 0x45, 0xc4, 0xc7, 0xd2,
-	0xa3, 0x5d, 0x9a, 0xf5, 0xfa, 0x99, 0xdd, 0x00, 0xe4, 0x2e, 0x2d, 0xe7, 0xca, 0x7b, 0x8d, 0xe1,
-	0x03, 0x3d, 0xd9, 0x60, 0xd8, 0x2d, 0x5c, 0x5a, 0xa3, 0x71, 0xae, 0x5c, 0xbe, 0x49, 0xcb, 0xad,
-	0x09, 0xcb, 0x0f, 0xa6, 0x97, 0x93, 0xca, 0x8b, 0x89, 0x34, 0x1a, 0xe5, 0x71, 0x0f, 0x7b, 0x07,
-	0xbd, 0xa0, 0x99, 0xfa, 0x49, 0x54, 0xb3, 0x9f, 0x2c, 0x92, 0x75, 0x99, 0xbd, 0x85, 0x2e, 0xc9,
-	0x71, 0xbc, 0x73, 0xd2, 0x47, 0xd2, 0x65, 0xac, 0x89, 0x19, 0xbc, 0xa2, 0xb5, 0x25, 0x6e, 0x2d,
-	0xba, 0x47, 0x69, 0x4c, 0xb1, 0xcc, 0x9d, 0xa7, 0xcf, 0xd8, 0xea, 0xcc, 0x93, 0x93, 0xeb, 0xd4,
-	0x24, 0xeb, 0xb2, 0xf8, 0x9d, 0x44, 0x2b, 0xbe, 0x98, 0xbc, 0xa4, 0x12, 0x1b, 0x42, 0xef, 0xa7,
-	0xc9, 0x4b, 0xb4, 0x95, 0xad, 0x6d, 0x59, 0x63, 0xf2, 0x24, 0x9e, 0xef, 0x55, 0x81, 0x41, 0x70,
-	0x5f, 0x36, 0x18, 0x26, 0xe0, 0xa2, 0xea, 0xdd, 0x98, 0x32, 0xcd, 0x78, 0x3b, 0xc4, 0x72, 0xc4,
-	0x51, 0xac, 0x3b, 0x6b, 0xf6, 0x4f, 0x69, 0xc6, 0x3b, 0xa1, 0x7c, 0x80, 0x14, 0x27, 0xad, 0x95,
-	0x66, 0xbc, 0x1b, 0xe3, 0x8c, 0x48, 0xcc, 0xe0, 0x3a, 0x8a, 0x54, 0xd9, 0xf3, 0xc3, 0x7e, 0xb3,
-	0x41, 0xe7, 0x62, 0xaf, 0xc6, 0x7a, 0xc7, 0x0a, 0xd1, 0x53, 0xb2, 0xd4, 0x17, 0x96, 0xeb, 0xc9,
-	0x08, 0xc4, 0xfb, 0x68, 0xd3, 0x83, 0x57, 0xd6, 0xc7, 0xf8, 0x96, 0x46, 0x65, 0x24, 0x55, 0x69,
-	0x1d, 0xe6, 0x56, 0x01, 0xd7, 0x58, 0xbc, 0x84, 0x17, 0x27, 0x57, 0xc4, 0xf7, 0x48, 0x45, 0xf4,
-	0xc9, 0x92, 0xe0, 0x1b, 0x80, 0x2d, 0x1d, 0x16, 0x66, 0x5f, 0xfa, 0xea, 0x15, 0x36, 0x18, 0x26,
-	0xa0, 0xbd, 0x29, 0xe2, 0x0b, 0x1c, 0x4c, 0xaf, 0xeb, 0x0c, 0x16, 0xa6, 0x28, 0x54, 0x99, 0x49,
-	0x2a, 0x8a, 0x71, 0x7c, 0x7a, 0x64, 0xfe, 0x07, 0xd4, 0xe8, 0xb1, 0x61, 0x44, 0x72, 0x64, 0xc4,
-	0xbc, 0x32, 0xc2, 0x68, 0xfc, 0xb6, 0xcf, 0x7d, 0x88, 0xeb, 0x7f, 0x46, 0xfc, 0x9b, 0xd1, 0x6a,
-	0xce, 0x58, 0x9f, 0x85, 0x5f, 0xf2, 0xf6, 0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xf5, 0x06, 0x69,
-	0x82, 0xbe, 0x03, 0x00, 0x00,
+var fileDescriptor_M2C_a7347fb6c83972fe = []byte{
+	// 946 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x56, 0x5f, 0x6f, 0xdb, 0x36,
+	0x10, 0x87, 0x63, 0xc7, 0x7f, 0xce, 0xeb, 0x92, 0xb2, 0xc1, 0x20, 0xe4, 0x61, 0x08, 0xb8, 0x01,
+	0xf3, 0x30, 0x20, 0x18, 0xdc, 0x62, 0x8f, 0x5b, 0x1b, 0xb7, 0xe9, 0xbc, 0xc6, 0x45, 0x47, 0x6f,
+	0xcb, 0xd3, 0x50, 0xd0, 0xd2, 0xc5, 0x16, 0x22, 0x89, 0x06, 0x49, 0x25, 0xf5, 0x67, 0xd8, 0x87,
+	0xd8, 0xfb, 0xbe, 0xc7, 0xbe, 0xd7, 0x70, 0x24, 0xa5, 0x28, 0xee, 0x8c, 0xa0, 0x6f, 0xfc, 0xdd,
+	0x1d, 0xef, 0x8e, 0xf7, 0xbb, 0x3b, 0x09, 0x06, 0xb3, 0xf1, 0xe4, 0x74, 0xad, 0x95, 0x55, 0xac,
+	0x97, 0xa3, 0x31, 0x72, 0x89, 0xc7, 0x83, 0xc9, 0x78, 0xe6, 0x65, 0xc7, 0x83, 0xd7, 0x95, 0x9a,
+	0xff, 0x09, 0x9d, 0x9f, 0x51, 0x2b, 0xf6, 0x05, 0x74, 0x57, 0xa8, 0xd5, 0x34, 0x89, 0x5a, 0x27,
+	0xad, 0xd1, 0xbe, 0x08, 0x88, 0x1d, 0xc1, 0x7e, 0x86, 0x37, 0x98, 0x45, 0x7b, 0x4e, 0xec, 0x01,
+	0xfb, 0x06, 0x7a, 0xa9, 0xc5, 0x7c, 0x9a, 0x98, 0xa8, 0x7d, 0xd2, 0x1e, 0x0d, 0xc7, 0x8f, 0x4e,
+	0x43, 0x98, 0xd3, 0xa9, 0xc5, 0x5c, 0x54, 0x5a, 0xfe, 0x77, 0x0b, 0x0e, 0xce, 0x35, 0xe2, 0x5c,
+	0x65, 0x49, 0x8a, 0xfa, 0xa5, 0xb4, 0x92, 0x7d, 0x09, 0xb0, 0xce, 0xe4, 0x06, 0xf5, 0x6f, 0x9b,
+	0x35, 0x86, 0x70, 0x0d, 0x09, 0x3b, 0x81, 0x61, 0x2c, 0xb5, 0x4e, 0x83, 0x81, 0x0f, 0xdc, 0x14,
+	0xb1, 0x63, 0xe8, 0x5b, 0x55, 0xbe, 0x29, 0xd3, 0x69, 0x12, 0xb5, 0x9d, 0xba, 0xc6, 0xf4, 0x90,
+	0x85, 0x4a, 0x36, 0xd3, 0x24, 0xea, 0xf8, 0x87, 0x78, 0x44, 0xf2, 0x5b, 0x94, 0xeb, 0x69, 0x12,
+	0xed, 0x7b, 0xb9, 0x47, 0xfc, 0x0f, 0xe8, 0x50, 0xca, 0xa4, 0xf7, 0x49, 0x57, 0x05, 0xf0, 0x88,
+	0x0a, 0x90, 0x16, 0x09, 0x7e, 0xa8, 0x0a, 0xe0, 0x00, 0xe5, 0x28, 0xad, 0xd5, 0xe9, 0xa2, 0xb4,
+	0xe8, 0x92, 0x68, 0x53, 0x8e, 0x0d, 0x11, 0x3f, 0x84, 0xcf, 0x67, 0xe3, 0xc9, 0x78, 0xf6, 0xfe,
+	0xb5, 0xcc, 0xf1, 0x5d, 0x5a, 0x2c, 0xf9, 0xbf, 0x6d, 0x27, 0x7a, 0xff, 0xaa, 0xb0, 0xa8, 0x2f,
+	0xd4, 0x62, 0xb1, 0xa1, 0xa0, 0x5a, 0xa9, 0x46, 0x50, 0x8f, 0xd8, 0x53, 0x78, 0xa4, 0x55, 0x86,
+	0x67, 0xd2, 0xa4, 0xf1, 0xb4, 0xb8, 0x52, 0x2e, 0x78, 0xb3, 0xca, 0x42, 0x65, 0x28, 0xee, 0xdb,
+	0xb0, 0x6f, 0xa1, 0xef, 0x48, 0x23, 0xfb, 0x6d, 0x56, 0x88, 0x63, 0x51, 0xab, 0xd9, 0x57, 0xb0,
+	0x4f, 0xcf, 0x33, 0x51, 0xe7, 0xff, 0xd8, 0xf3, 0x3a, 0xaa, 0xf2, 0x42, 0x5a, 0x9b, 0x61, 0x5d,
+	0xb3, 0x1a, 0x3b, 0x06, 0xa4, 0xb9, 0x9e, 0x23, 0x26, 0x51, 0x37, 0x30, 0x10, 0x30, 0x8b, 0xa0,
+	0x77, 0x83, 0xda, 0xa4, 0xaa, 0x88, 0x7a, 0x27, 0xad, 0xd1, 0x40, 0x54, 0x90, 0x8d, 0xa1, 0x27,
+	0xb5, 0x56, 0xb7, 0xa8, 0xa3, 0xbe, 0x7b, 0x50, 0x54, 0x07, 0xde, 0x6a, 0x12, 0x51, 0x19, 0xb2,
+	0xef, 0xa1, 0x9b, 0x48, 0x95, 0x94, 0x45, 0x34, 0x78, 0xe0, 0x4a, 0xb0, 0x63, 0xa7, 0xb0, 0x6f,
+	0xd6, 0x28, 0x75, 0x04, 0x0f, 0x5c, 0xf0, 0x66, 0x64, 0x7f, 0x25, 0xcd, 0x2a, 0x8d, 0x86, 0x0f,
+	0xd9, 0x3b, 0x33, 0xfe, 0x1c, 0x9e, 0x10, 0x8d, 0x02, 0xaf, 0x34, 0x9a, 0x95, 0x50, 0x2a, 0xbf,
+	0x48, 0x8d, 0xa5, 0xf2, 0xeb, 0x70, 0x8e, 0x5a, 0x5b, 0x65, 0x25, 0x23, 0x51, 0xab, 0xf9, 0x5f,
+	0x2d, 0xf8, 0x8c, 0x5c, 0xfc, 0xa2, 0xd2, 0x82, 0x54, 0xec, 0x3b, 0xe8, 0xe6, 0x98, 0x2f, 0x50,
+	0xbb, 0x3e, 0x18, 0x8e, 0x9f, 0xdc, 0xbb, 0x39, 0x73, 0x2a, 0x11, 0x4c, 0x1a, 0x4d, 0xb3, 0x77,
+	0xaf, 0x69, 0x7e, 0x80, 0x21, 0x9d, 0xe6, 0x68, 0x6d, 0x5a, 0x2c, 0xdd, 0x60, 0x0c, 0xc7, 0x47,
+	0xf7, 0x3c, 0x05, 0x9d, 0x68, 0x1a, 0xf2, 0x9f, 0x60, 0xd8, 0xd0, 0x51, 0xc3, 0xe7, 0x6e, 0x4e,
+	0x7c, 0x4b, 0x7a, 0x40, 0x84, 0xa7, 0xe6, 0x52, 0xea, 0x73, 0x75, 0xeb, 0xc2, 0xf6, 0x45, 0x8d,
+	0xf9, 0x73, 0x38, 0xf4, 0x05, 0x91, 0xc9, 0x66, 0x5e, 0xc6, 0x31, 0x1a, 0xe3, 0x93, 0x74, 0xad,
+	0x43, 0x6e, 0xda, 0x22, 0x20, 0xf2, 0xae, 0xc9, 0x2e, 0x38, 0xf1, 0x80, 0xbf, 0xf2, 0x25, 0x9d,
+	0x5b, 0xa9, 0xed, 0x99, 0xeb, 0xb1, 0x0b, 0x25, 0x5d, 0x50, 0x99, 0x65, 0xce, 0xaf, 0x73, 0xd3,
+	0x17, 0x35, 0x66, 0x0c, 0x3a, 0x86, 0xba, 0xcf, 0xd7, 0xc0, 0x9d, 0xf9, 0x63, 0x38, 0xd8, 0x72,
+	0xc3, 0x7f, 0xf7, 0x22, 0x8f, 0xce, 0xb5, 0xcc, 0x91, 0xf6, 0xcf, 0x15, 0x1d, 0x26, 0xaa, 0x2c,
+	0x6c, 0xb5, 0x7f, 0xee, 0x24, 0x8c, 0x43, 0x3b, 0xce, 0xc9, 0x31, 0x71, 0x78, 0x58, 0xd7, 0x6f,
+	0xa2, 0xf2, 0x5c, 0x16, 0x89, 0x20, 0x25, 0x1f, 0xf9, 0x51, 0xa6, 0xba, 0xbd, 0xc4, 0x0c, 0x2d,
+	0xee, 0x1a, 0x65, 0x7e, 0x16, 0x8a, 0xa3, 0x32, 0xfc, 0xb5, 0x4c, 0xad, 0xa3, 0x7b, 0x57, 0x71,
+	0x76, 0x30, 0xcb, 0x85, 0xf7, 0xe1, 0x1f, 0x21, 0xd0, 0x94, 0x99, 0xa5, 0xf7, 0x2f, 0x55, 0x56,
+	0x45, 0x73, 0x67, 0x76, 0x08, 0x6d, 0xfc, 0xb0, 0x0e, 0x97, 0xe9, 0x48, 0xb3, 0xe8, 0x17, 0xb9,
+	0x09, 0x3b, 0xaa, 0x82, 0x7c, 0x04, 0x8c, 0x7c, 0x5e, 0x4a, 0x1b, 0xaf, 0x5e, 0x24, 0x66, 0xb7,
+	0x57, 0xfe, 0xcc, 0x5b, 0x4e, 0x56, 0xb2, 0x58, 0xe2, 0xdb, 0x34, 0xbe, 0x7e, 0x1b, 0xaa, 0xa8,
+	0xdd, 0x1d, 0x42, 0xce, 0x7e, 0x20, 0x1a, 0x12, 0x3e, 0x86, 0xa3, 0xbb, 0x5b, 0x2f, 0x6e, 0xa4,
+	0x95, 0x7a, 0x1a, 0xab, 0xc2, 0x71, 0xea, 0x51, 0x15, 0xa5, 0xc6, 0xfc, 0x9f, 0x56, 0x35, 0x5a,
+	0xfe, 0xa9, 0x13, 0x55, 0x14, 0x18, 0xd7, 0xa3, 0xe5, 0x36, 0x5b, 0xeb, 0xa3, 0x4d, 0x58, 0x8d,
+	0x96, 0xdb, 0x6c, 0xcf, 0xa0, 0x1f, 0x7b, 0xa2, 0x4c, 0x60, 0xf0, 0x6e, 0x9e, 0xe7, 0xf2, 0x06,
+	0x03, 0x8b, 0x34, 0x86, 0xa2, 0xb6, 0xac, 0x9b, 0xa9, 0x7d, 0xd7, 0x4c, 0x5b, 0x6d, 0xd2, 0xd9,
+	0x6e, 0x13, 0xfe, 0x23, 0x3c, 0xf6, 0xb9, 0x52, 0x06, 0x9f, 0x9e, 0x29, 0xbf, 0x84, 0x83, 0xad,
+	0x84, 0xea, 0x90, 0x53, 0xf7, 0xc1, 0x69, 0x76, 0xa6, 0x93, 0xb0, 0xaf, 0xa1, 0x13, 0xe7, 0xf5,
+	0xc3, 0x3e, 0x6e, 0x4d, 0xa7, 0xe5, 0x6f, 0x7c, 0x62, 0x67, 0xe5, 0xc6, 0x6d, 0x7d, 0x4f, 0xec,
+	0xae, 0xef, 0x7b, 0x4d, 0xe3, 0x44, 0x25, 0xd5, 0xb7, 0xb6, 0x21, 0xe1, 0x2b, 0x4f, 0xe3, 0x05,
+	0x4a, 0x5d, 0xcc, 0xaf, 0x53, 0x9a, 0x3e, 0xe7, 0x2f, 0x82, 0x9e, 0x21, 0x58, 0x3b, 0xac, 0x60,
+	0x23, 0xd2, 0xde, 0x76, 0x24, 0x67, 0xf2, 0x4e, 0xa5, 0x85, 0x0d, 0x95, 0x6e, 0x48, 0x16, 0x5d,
+	0xf7, 0x43, 0xf2, 0xf4, 0xbf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x04, 0x5f, 0x73, 0xf4, 0xbc, 0x08,
+	0x00, 0x00,
 }

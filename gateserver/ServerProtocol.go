@@ -27,8 +27,7 @@ func (protocol ServerProtocol) Init() {
 	protocol.pool.Register(1000, reflect.TypeOf(message.C2G_UserLogin{}))
 	protocol.pool.Register(1001, reflect.TypeOf(message.G2C_CharacterInfo{}))
 	protocol.pool.Register(1002, reflect.TypeOf(message.C2G_SelectCharacter{}))
-	protocol.pool.Register(1003,reflect.TypeOf(message.C2G_ChangeNickName{}))
-	protocol.pool.Register(1004,reflect.TypeOf(message.C2G_ChangeAvatarIcon{}))
+	protocol.pool.Register(1003, reflect.TypeOf(message.G2C_QuitGame{}))
 
 	protocol.pool.Register(5001,reflect.TypeOf(message.C2M_ReqRefreshRoomList{}))
 	protocol.pool.Register(5003,reflect.TypeOf(message.C2M_CreateRoom{}))
@@ -37,6 +36,21 @@ func (protocol ServerProtocol) Init() {
 	protocol.pool.Register(5008,reflect.TypeOf(message.C2M_StartBattle{}))
 	protocol.pool.Register(5010,reflect.TypeOf(message.C2M_LoadFinished{}))
 	protocol.pool.Register(5013,reflect.TypeOf(message.C2M_Command{}))
+	protocol.pool.Register(5014,reflect.TypeOf(message.M2C2M_GamePing{}))
+	protocol.pool.Register(5017,reflect.TypeOf(message.C2M_WinBattle{}))
+	protocol.pool.Register(5018,reflect.TypeOf(message.C2M_FailedBattle{}))
+	protocol.pool.Register(5020,reflect.TypeOf(message.C2M_WatchAds{}))
+	protocol.pool.Register(5022,reflect.TypeOf(message.C2M_ChangeNickName{}))
+	protocol.pool.Register(5023,reflect.TypeOf(message.C2M_ChangeAvatarIcon{}))
+	protocol.pool.Register(5026,reflect.TypeOf(message.C2M2C_ChangeEquipItemPos{}))
+	protocol.pool.Register(5027,reflect.TypeOf(message.C2M_QuitRoom{}))
+	protocol.pool.Register(5030,reflect.TypeOf(message.C2M_BuyHero{}))
+	protocol.pool.Register(5032,reflect.TypeOf(message.C2M2C_Chat{}))
+	protocol.pool.Register(5033,reflect.TypeOf(message.C2M_LearnSkill{}))
+	protocol.pool.Register(5035,reflect.TypeOf(message.C2M2C_ChangeSkill{}))
+	protocol.pool.Register(5036,reflect.TypeOf(message.C2M2C_GetAchievement{}))
+	protocol.pool.Register(5037,reflect.TypeOf(message.C2M2C_GetTask{}))
+	protocol.pool.Register(5038,reflect.TypeOf(message.C2M2C_GetSign{}))
 }
 func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, data []byte) (interface{}, int, error) {
 	var (
@@ -45,6 +59,10 @@ func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, da
 		msgHeader MessageHeader
 		chanMsg   network.WriteMessage
 	)
+	//log4g.Infof("fwef:%d",len(data))
+	//if len(data) < 256{
+	//	return nil, 0, nil
+	//}
 	msgHeader = MessageHeader{}
 	ioBuffer = bytes.NewBuffer(data)
 	if ioBuffer.Len() < messageHeaderLen {
@@ -65,11 +83,13 @@ func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, da
 		//if msgHeader.OrderId == 0 {
 		//	fmt.Println("用户客户端发送消息序列成功")
 		//}
+		//log4g.Infof("fe242f%d,%d,%d",msgHeader.MessageId,msgHeader.MsgBodyLen,msgHeader.OrderId)
 	} else {
 		if msgHeader.OrderId == perOrder {
+			//log4g.Infof("fef:%d",msgHeader.MessageId)
 			session.SetAttribute(network.PREORDERID, msgHeader.OrderId+1)
 		} else {
-			log4g.Errorf("发送消息序列出错[%d]", msgHeader.OrderId)
+			log4g.Errorf("发送消息[%d]序列出错[%d]",msgHeader.MessageId, msgHeader.OrderId)
 			return nil, 0, nil
 		}
 	}

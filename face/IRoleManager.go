@@ -6,5 +6,6 @@ type IRoleManager interface {
 	NewOnlineRoleFormDB(roleId int64) IOnlineRole
 	NewOnlineRole(roleId int64) IOnlineRole
 	RegisterRole(serverId int32,userId int64,roleId int64)
-	QuitRole(roleId int64,serverId int32)
+	QuitRoleNoClearCache(roleId int64,serverId int32)
+	QuitRoleWithClearCache(roleId int64)
 }

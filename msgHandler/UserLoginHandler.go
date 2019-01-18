@@ -9,6 +9,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"strconv"
 	"cmgateserver/face"
+	"time"
 )
 
 type UserLoginHandler struct {
@@ -58,12 +59,14 @@ func (handler *UserLoginHandler) Action(session network.SocketSessionInterface, 
 				if oldRoleId, ok := aRoleId.(int64); ok {
 					handler.GateServer.RemoveRoleSession(oldRoleId)
 				}
+				oldSession.RemoveAttribute(network.ROLEID)
 			}
 			aUserId := oldSession.GetAttribute(network.USERID)
 			if aUserId != nil {
 				if oldUserId, ok := aUserId.(int64); ok {
 					handler.GateServer.RemoveUserSession(oldUserId)
 				}
+				oldSession.RemoveAttribute(network.USERID)
 			}
 			//关闭oldSession
 			oldSession.Close(0)
@@ -86,9 +89,46 @@ func (handler *UserLoginHandler) Action(session network.SocketSessionInterface, 
 			role.ServerId = user.ServerId
 			role.Level = 1
 			role.Exp = 0
-			role.Gold = 1000
-			role.Diam = 100
+			role.Gold = 0
+			role.Diam = 0
 			role.AvatarId = 1
+			role.MaxBagNum = 32
+			now := time.Now()
+			role.LoginTime = now
+			role.DayGetTask = make([]int32,0)
+			role.WinLevel = make([]int32,0)
+			role.Achievement = make([]int32,0)
+			role.TaskSeed = int32(now.Nanosecond())
+			//role.WinLevel = append(role.WinLevel, 1,2)
+			for i:=0;i<int(role.MaxBagNum);i++{
+				item := bean.Item{}
+				item.ItemId = 0
+				role.Items = append(role.Items, item)
+			}
+			//Arrower
+			soldierData1 := bean.FreeSoldierData{}
+			soldierData1.PlayerType = 2
+			soldierData1.TouKuiId = 1
+			soldierData1.WeapId = 5001
+			role.FreeSoldierData[0] = soldierData1
+			//Daodun
+			soldierData2 := bean.FreeSoldierData{}
+			soldierData2.PlayerType = 1
+			soldierData2.TouKuiId = 1
+			soldierData2.WeapId = 4001
+			role.FreeSoldierData[1] = soldierData2
+			//Spear
+			soldierData3 := bean.FreeSoldierData{}
+			soldierData3.PlayerType = 1
+			soldierData3.TouKuiId = 1
+			soldierData3.WeapId = 8001
+			role.FreeSoldierData[2] = soldierData3
+			//fashi
+			soldierData4 := bean.FreeSoldierData{}
+			soldierData4.PlayerType = 1
+			soldierData4.TouKuiId = 1
+			soldierData4.WeapId = 7001
+			role.FreeSoldierData[3] = soldierData4
 			err = c.Insert(&role)
 			if err != nil {
 				log4g.Error("玩家角色账号插入数据库出错!")
@@ -106,6 +146,7 @@ func (handler *UserLoginHandler) Action(session network.SocketSessionInterface, 
 		msg.Role.Diam = role.Diam
 		msg.Role.Gold = role.Gold
 		msg.Role.Exp = role.Exp
+		msg.Role.MaxBagNum = role.MaxBagNum
 		handler.GateServer.SendMsgToClient(session, 1001, msg)
 		log4g.Infof("游戏玩家[%s]登录游戏服务器[%d]", protoMsg.UserName, protoMsg.GameServerId)
 	}
