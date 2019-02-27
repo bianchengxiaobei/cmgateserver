@@ -51,6 +51,11 @@ func (protocol ServerProtocol) Init() {
 	protocol.pool.Register(5036,reflect.TypeOf(message.C2M2C_GetAchievement{}))
 	protocol.pool.Register(5037,reflect.TypeOf(message.C2M2C_GetTask{}))
 	protocol.pool.Register(5038,reflect.TypeOf(message.C2M2C_GetSign{}))
+	protocol.pool.Register(5039,reflect.TypeOf(message.C2M2C_ChangeFreeSoldierData{}))
+	protocol.pool.Register(5040,reflect.TypeOf(message.C2M_ChangeSex{}))
+	protocol.pool.Register(5041,reflect.TypeOf(message.M2C_ChangeSexResult{}))
+	protocol.pool.Register(5042,reflect.TypeOf(message.C2M_ChangeSign{}))
+	protocol.pool.Register(5043,reflect.TypeOf(message.M2C_ChangeSignResult{}))
 }
 func (protocol ServerProtocol) Decode(session network.SocketSessionInterface, data []byte) (interface{}, int, error) {
 	var (

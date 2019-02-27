@@ -93,6 +93,8 @@ func (handler *UserLoginHandler) Action(session network.SocketSessionInterface, 
 			role.Diam = 0
 			role.AvatarId = 1
 			role.MaxBagNum = 32
+			role.Sign = "(ง •_•)ง,加油"
+			role.Sex = 0
 			now := time.Now()
 			role.LoginTime = now
 			role.DayGetTask = make([]int32,0)
@@ -119,13 +121,13 @@ func (handler *UserLoginHandler) Action(session network.SocketSessionInterface, 
 			role.FreeSoldierData[1] = soldierData2
 			//Spear
 			soldierData3 := bean.FreeSoldierData{}
-			soldierData3.PlayerType = 1
+			soldierData3.PlayerType = 7
 			soldierData3.TouKuiId = 1
 			soldierData3.WeapId = 8001
 			role.FreeSoldierData[2] = soldierData3
 			//fashi
 			soldierData4 := bean.FreeSoldierData{}
-			soldierData4.PlayerType = 1
+			soldierData4.PlayerType = 10
 			soldierData4.TouKuiId = 1
 			soldierData4.WeapId = 7001
 			role.FreeSoldierData[3] = soldierData4
