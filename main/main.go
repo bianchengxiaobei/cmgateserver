@@ -1,6 +1,25 @@
 package main
 
 import (
+	"github.com/bianchengxiaobei/cmgo/log4g"
+	"github.com/bianchengxiaobei/cmgo/network"
+	"cmgateserver/gateserver"
+	"net/http"
+	_ "net/http/pprof"
+)
+var server *gateserver.GateServer
+func main() {
+	log4g.LoadConfig("/logConfig.txt")
+
+	server = gateserver.NewGateServer()
+	server.Init("gateBaseConfig.txt", "gateSesssionConfig.txt", "innnerSessionConfig.txt")
+	server.Run()
+	http.ListenAndServe("0.0.0.0:6565",nil)
+	network.WaitSignal()
+	server.Close()
+}
+/*
+import (
 	"cmgateserver/gateserver"
 	"cmgateserver/gui"
 	"fmt"
@@ -134,3 +153,4 @@ func ClickGateSessionConfig() {
 	}
 	window.SettingDialogSecond.Run(*window.Win.AssignTo)
 }
+*/

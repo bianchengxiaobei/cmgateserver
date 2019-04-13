@@ -21,6 +21,7 @@ func (handler *SelectCharacterHandler) Action(session network.SocketSessionInter
 		msg.UserId = userId
 		msg.UserName = userName
 		msg.ServerId = serverId
+		msg.ProtoMessage()
 		handler.GateServer.SendMsgToGameServer(msg.ServerId, 10001, msg)
 	}
 }

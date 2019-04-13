@@ -50,7 +50,7 @@ func (handler ServerMessageHandler) SessionOpened(session network.SocketSessionI
 	return nil
 }
 
-func (handler ServerMessageHandler) SessionClosed(session network.SocketSessionInterface) {
+func (handler ServerMessageHandler) SessionClosed(session network.SocketSessionInterface,err error) {
 	//客户端断开连接
 	//通知游戏服务器断开连接
 	defer func() {
@@ -78,16 +78,14 @@ func (handler ServerMessageHandler) SessionClosed(session network.SocketSessionI
 			handler.gateServer.RoleManager.QuitRoleNoClearCache(-1000,serverId)
 		}
 	}
-	if server, ok := handler.server.(*network.TcpServer); ok {
-		delete(server.Sessions, session.Id())
-		log4g.Infof("Session[%d]关闭!角色[%d]退出网关!", session.Id(),roleId.(int64))
-	}
+	handler.server.RemoveSession(session.Id())
+	log4g.Infof("Session[%d]关闭!角色[%d]退出网关!", session.Id(),roleId.(int64))
 }
 
 func (handler ServerMessageHandler) SessionPeriod(session network.SocketSessionInterface) {
-
+	//log4g.Info("111")
 }
 
 func (handler ServerMessageHandler) ExceptionCaught(session network.SocketSessionInterface, err error) {
-	//log4g.Info(err.Error())
+	log4g.Info(err.Error())
 }

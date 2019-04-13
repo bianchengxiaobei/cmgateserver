@@ -17,10 +17,13 @@ func (handler *CloseSessionHandler) Action(session network.SocketSessionInterfac
 			session := handler.GateServer.GetRoleSession(protoMsg.RoleId)
 			if session != nil {
 				if session.IsClosed() == false{
-					log4g.Infof("玩家[%d]关闭Session[%d]", protoMsg.RoleId, handler.GateServer.GetId())
-					rMsg := &message.G2C_QuitGame{}
-					handler.GateServer.SendMsgToClient(session,1003,rMsg)
+					//log4g.Infof("玩家[%d]关闭Session[%d]", protoMsg.RoleId, handler.GateServer.GetId())
+					//rMsg := &message.G2C_QuitGame{}
+					//handler.GateServer.SendMsgToClient(session,1003,rMsg)
 					session.Close(0)
+				}else{
+					session.Close(0)
+					log4g.Info("OtherClose")
 				}
 			}
 		} else {

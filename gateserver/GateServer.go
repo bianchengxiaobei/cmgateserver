@@ -260,9 +260,9 @@ func (server *GateServer) LoadSessionConfig(filePath string) {
 
 //网关注册内部游戏服务器
 func (server *GateServer) RegisterInnerGameServer(serverId int32, session network.SocketSessionInterface) {
-	session.SetAttribute(network.SERVERID, serverId)
-	defer server.lock.Unlock()
 	server.lock.Lock()
+	defer server.lock.Unlock()
+	session.SetAttribute(network.SERVERID, serverId)
 	_, ok := server.gameSessions[serverId]
 	if ok {
 		log4g.Errorf("GameSession[%d]已经存在!", serverId)
@@ -311,6 +311,8 @@ func (server *GateServer) RemoveUserSession(userId int64) {
 
 //取得玩家通信
 func (server *GateServer) GetUserSession(userId int64) (session network.SocketSessionInterface) {
+	server.lock.Lock()
+	defer server.lock.Unlock()
 	return server.userSessions[userId]
 }
 
@@ -331,8 +333,8 @@ func (server *GateServer) RemoveRoleSession(roleId int64) {
 
 //取得玩家角色通信
 func (server *GateServer) GetRoleSession(roleId int64) (session network.SocketSessionInterface) {
-	//server.lock.Lock()
-	//defer server.lock.Unlock()
+	server.lock.Lock()
+	defer server.lock.Unlock()
 	return server.roleSessions[roleId]
 }
 

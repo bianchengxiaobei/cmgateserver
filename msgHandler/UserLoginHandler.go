@@ -91,12 +91,14 @@ func (handler *UserLoginHandler) Action(session network.SocketSessionInterface, 
 			role.Exp = 0
 			role.Gold = 0
 			role.Diam = 0
+			role.RankScore = 0
 			role.AvatarId = 1
 			role.MaxBagNum = 32
 			role.Sign = "(ง •_•)ง,加油"
 			role.Sex = 0
 			now := time.Now()
 			role.LoginTime = now
+			role.HeroCount = 1
 			role.DayGetTask = make([]int32,0)
 			role.WinLevel = make([]int32,0)
 			role.Achievement = make([]int32,0)
@@ -105,8 +107,17 @@ func (handler *UserLoginHandler) Action(session network.SocketSessionInterface, 
 			for i:=0;i<int(role.MaxBagNum);i++{
 				item := bean.Item{}
 				item.ItemId = 0
+				item.ItemSeed = 0
+				item.ItemNum = 0
 				role.Items = append(role.Items, item)
 			}
+			//邮件，新手加入就发邮件
+			email := bean.Email{
+				EmailId:1,
+				EmailTime:time.Now().In(time.FixedZone("CST", 8*60*60)).Unix(),
+				Get:false,
+			}
+			role.Emails = append(role.Emails, email)
 			//Arrower
 			soldierData1 := bean.FreeSoldierData{}
 			soldierData1.PlayerType = 2

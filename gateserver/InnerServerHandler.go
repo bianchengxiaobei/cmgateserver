@@ -26,7 +26,7 @@ func (handler InnnerServerMessageHandler) MessageReceived(session network.Socket
 	} else {
 		action := handler.pool.GetHandler(int32(writeMsg.MsgId))
 		if action == nil {
-			//log4g.Errorf("找不到该Handler[%d]", writeMsg.MsgId)
+			//log4g.Infof("找不到该Handler[%d]", writeMsg.MsgId)
 			//return errors.New("找不到该Handler")
 			//如果找不到handler说明是直接发给客户端的
 			if innerMsg, ok := writeMsg.MsgData.(network.InnerWriteMessage); ok {
@@ -52,7 +52,7 @@ func (handler InnnerServerMessageHandler) SessionOpened(session network.SocketSe
 	return nil
 }
 
-func (handler InnnerServerMessageHandler) SessionClosed(session network.SocketSessionInterface) {
+func (handler InnnerServerMessageHandler) SessionClosed(session network.SocketSessionInterface,err error) {
 
 }
 
