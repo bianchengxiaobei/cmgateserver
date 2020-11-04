@@ -26,9 +26,11 @@ type GateServer struct {
 	Id                    int
 	GateAddr              string
 	InnerAddr             string
+	Release     bool
 	UserClientServer      network.ISocket
 	InnerConnectServer    network.ISocket
 	IsRunning             bool
+	NeedCloseServer  map[int32]bool
 	//玩家客户端通信列表，存的是网关与客户端的session
 	userSessions map[int64]network.SocketSessionInterface
 	//内部游戏服务器通信列表，存的是网关与游戏服务器的session
@@ -44,6 +46,7 @@ type GateServerConfig struct {
 	Id         int
 	SocketAddr string
 	InnerAddr  string
+	Release   bool
 }
 
 var (
@@ -53,6 +56,7 @@ var (
 	innerHandler       InnnerServerMessageHandler //内部服务器消息处理器
 	NoGameSessionError error                      = errors.New("没有逻辑服游戏Session节点")
 	NoRoleSessionError error                      = errors.New("玩家还未登录到游戏服务器")
+	SessionCloseError error 					= errors.New("Session已经关闭")
 )
 
 //初始化网关配置
@@ -107,7 +111,7 @@ func (server *GateServer) Init(gateBaseConfig string, gateConfig string, innerCo
 	server.UserClientServer.SetMessageHandler(serverHandler)
 	server.InnerConnectServer.SetMessageHandler(innerHandler)
 	//BD
-	server.DBManager = db.NewMongoBD("127.0.0.1", 5)
+	server.DBManager = db.NewMongoBD("127.0.0.1", 5,server.Release)
 	server.RoleManager = roleManager.NewRoleManager(server)
 }
 func (server *GateServer) Run() {
@@ -156,6 +160,7 @@ func NewGateServer() *GateServer {
 		userSessions: make(map[int64]network.SocketSessionInterface),
 		gameSessions: make(map[int32]network.SocketSessionInterface),
 		roleSessions: make(map[int64]network.SocketSessionInterface),
+		NeedCloseServer:make(map[int32]bool),
 	}
 	return server
 }
@@ -229,6 +234,7 @@ func (server *GateServer) LoadSessionConfig(filePath string) {
 			Id:         1,
 			SocketAddr: ":8000",
 			InnerAddr:  ":8001",
+			Release:false,
 		}
 		data, err = json.Marshal(config)
 		if _, err = file.Write(data); err != nil {
@@ -256,6 +262,7 @@ func (server *GateServer) LoadSessionConfig(filePath string) {
 	server.Name = config.Name
 	server.GateAddr = config.SocketAddr
 	server.InnerAddr = config.InnerAddr
+	server.Release = config.Release
 }
 
 //网关注册内部游戏服务器
@@ -265,20 +272,31 @@ func (server *GateServer) RegisterInnerGameServer(serverId int32, session networ
 	session.SetAttribute(network.SERVERID, serverId)
 	_, ok := server.gameSessions[serverId]
 	if ok {
-		log4g.Errorf("GameSession[%d]已经存在!", serverId)
+		log4g.Infof("GameSession[%d]已经存在!", serverId)
 	} else {
 		server.gameSessions[serverId] = session
+		server.NeedCloseServer[serverId] = false
 		log4g.Infof("网关注册游戏服务器id:%d", serverId)
 	}
 }
-
+func (server *GateServer)SetInnerGameServerNeedClose(serverId int32){
+	close, ok := server.NeedCloseServer[serverId]
+	if ok {
+		if close == false{
+			server.NeedCloseServer[serverId] = true
+		}
+	}
+}
+func (server *GateServer)GetInnerGameServerNeedClose(serverId int32)bool{
+	return server.NeedCloseServer[serverId]
+}
 //网关移除内部游戏服务器
 func (server *GateServer) RemoveInnerGameServer(serverId int32, session network.SocketSessionInterface) {
 	server.lock.Lock()
 	defer server.lock.Unlock()
 	_, ok := server.gameSessions[serverId]
 	if !ok {
-		log4g.Errorf("GameSession[%d]不存在，移除失败！", serverId)
+		log4g.Infof("GameSession[%d]不存在，移除失败！", serverId)
 	} else {
 		delete(server.gameSessions, serverId)
 		log4g.Infof("网关移除游戏服务器id:%d", serverId)
@@ -345,7 +363,7 @@ func (server *GateServer) SendMsgToGameServer(serverId int32, msgId int, msg pro
 		//说明不存在游戏逻辑服节点，还没有注册
 		log4g.Infof("未注册游戏逻辑服节点Id[%d]", serverId)
 		return NoGameSessionError
-	} else {
+	} else if session.IsClosed() == false{
 		innerMsg := network.InnerWriteMessage{
 			RoleId:  0,
 			MsgData: msg,
@@ -353,6 +371,8 @@ func (server *GateServer) SendMsgToGameServer(serverId int32, msgId int, msg pro
 		if err := session.WriteMsg(msgId, innerMsg); err != nil {
 			return err
 		}
+	}else{
+		return SessionCloseError
 	}
 	return nil
 }
@@ -364,7 +384,7 @@ func (server *GateServer) SendMsgToGameServerByRoleId(roleId int64, msgId int, m
 			//说明不存在游戏逻辑服节点，还没有注册
 			log4g.Infof("未注册游戏逻辑服节点Id[%d]", onlineRole.GetServerId())
 			return NoGameSessionError
-		} else {
+		} else if session.IsClosed() == false {
 			innerMsg := network.InnerWriteMessage{
 				RoleId:  roleId,
 				MsgData: msg,
@@ -372,6 +392,8 @@ func (server *GateServer) SendMsgToGameServerByRoleId(roleId int64, msgId int, m
 			if err := session.WriteMsg(msgId, innerMsg); err != nil {
 				return err
 			}
+		}else{
+			return SessionCloseError
 		}
 		return nil
 	}
@@ -384,16 +406,32 @@ func (server *GateServer) SendMsgToClientByRoleId(roleId int64, msgId int, msg i
 	if session == nil {
 		log4g.Infof("玩家[%d]还未登录到游戏服务器!消息Id[%d]", roleId,msgId)
 		return nil
-	} else {
+	} else if session.IsClosed() == false{
+		if err := session.WriteMsg(msgId, msg); err != nil {
+			return err
+		}
+	}else{
+		//移除
+		session.Close(0)
+		return SessionCloseError
+	}
+	return nil
+}
+func (server *GateServer)SendMsgToClientByUserId(userId int64,msgId int, msg interface{})error{
+	session := server.GetUserSession(userId)
+	if session != nil{
 		if err := session.WriteMsg(msgId, msg); err != nil {
 			return err
 		}
 	}
 	return nil
 }
-
 //网关发送消息给玩家客户端
 func (server *GateServer) SendMsgToClient(session network.SocketSessionInterface, msgId int, msg interface{}) error {
-	err := session.WriteMsg(msgId, msg)
-	return err
+	if session.IsClosed() == false{
+		err := session.WriteMsg(msgId, msg)
+		return err
+	}else{
+		return SessionCloseError
+	}
 }

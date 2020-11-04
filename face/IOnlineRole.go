@@ -24,4 +24,5 @@ type IOnlineRole interface {
 	SetExp(exp int32)
 	GetLevel() int32
 	SetLevel(level int32)
+	//AddEmail(email bean.Email)
 }

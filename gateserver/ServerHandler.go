@@ -17,10 +17,15 @@ type ServerMessageHandler struct {
 func (handler ServerMessageHandler) Init() {
 	handler.pool.Register(1000, &msgHandler.UserLoginHandler{GateServer: handler.gateServer})
 	handler.pool.Register(1002, &msgHandler.SelectCharacterHandler{GateServer: handler.gateServer})
+	handler.pool.Register(1005,&msgHandler.CreateCharacterHandler{GateServer:handler.gateServer})
 }
 
 func (handler ServerMessageHandler) MessageReceived(session network.SocketSessionInterface, message interface{}) error {
-
+	defer func() {
+		if err := recover();err != nil{
+			println("出错",err)
+		}
+	}()
 	if writeMsg, ok := message.(network.WriteMessage); !ok {
 		return errors.New("不是WriteMessage类型")
 	} else {

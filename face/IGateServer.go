@@ -9,6 +9,8 @@ import (
 type IGateServer interface {
 	RegisterInnerGameServer(serverId int32, session network.SocketSessionInterface)
 	RemoveInnerGameServer(serverId int32, session network.SocketSessionInterface)
+	SetInnerGameServerNeedClose(serverId int32)
+	GetInnerGameServerNeedClose(serverId int32)bool
 	GetId() int
 	GetDBManager() *db.MongoBDManager
 	GetRoleManager() IRoleManager
@@ -21,5 +23,6 @@ type IGateServer interface {
 	SendMsgToGameServer(serverId int32, msgId int, msg proto.Message) error
 	SendMsgToGameServerByRoleId(roleId int64, msgId int, msg proto.Message) error
 	SendMsgToClientByRoleId(roleId int64, msgId int, msg interface{}) error
+	SendMsgToClientByUserId(userId int64,msgId int, msg interface{})error
 	SendMsgToClient(session network.SocketSessionInterface, msgId int, msg interface{}) error
 }

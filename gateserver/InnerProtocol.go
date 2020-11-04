@@ -32,9 +32,14 @@ func (protocol InnerProtocol) Init() {
 	//protocol.pool.Register(10001, reflect.TypeOf(message.G2M_LoginToGameServer{}))
 	protocol.pool.Register(10002,reflect.TypeOf(message.M2G_LoginSuccessNotifyGate{}))
 	//protocol.pool.Register(10003,reflect.TypeOf(message.G2M_RoleRegisterToGateSuccess{}))
-	protocol.pool.Register(10004,reflect.TypeOf(message.G2M_RoleQuitGameServer{}))
+	//protocol.pool.Register(10004,reflect.TypeOf(message.G2M_RoleQuitGameServer{}))
 	protocol.pool.Register(10005,reflect.TypeOf(message.M2G_RoleQuitGate{}))
 	protocol.pool.Register(10006,reflect.TypeOf(message.M2G_CloseSession{}))
+	protocol.pool.Register(10007,reflect.TypeOf(message.M2G_BindZhangHao{}))
+
+
+	protocol.pool.Register(100001, reflect.TypeOf(message.C2M_GMCommand{}))
+	protocol.pool.Register(100002, reflect.TypeOf(message.M2C_GMCommandResult{}))
 
 	//直接发给客户端消息
 	protocol.pool.Register(5000,reflect.TypeOf(message.M2C_EnterLobby{}))
@@ -88,7 +93,7 @@ func (protocol InnerProtocol) Init() {
 	protocol.pool.Register(5048,reflect.TypeOf(message.C2M_GetEmailAward{}))
 	protocol.pool.Register(5049,reflect.TypeOf(message.M2C_GetEmailResult{}))
 	protocol.pool.Register(5050,reflect.TypeOf(message.C2M2C_DeleteEmail{}))
-	protocol.pool.Register(5051,reflect.TypeOf(message.M2C_AddEmai{}))
+	protocol.pool.Register(5051,reflect.TypeOf(message.M2C_AddEmail{}))
 	protocol.pool.Register(5052,reflect.TypeOf(message.C2M_UseItem{}))
 	protocol.pool.Register(5053,reflect.TypeOf(message.M2C_UseItemResult{}))
 	protocol.pool.Register(5054,reflect.TypeOf(message.C2M2C_ReqPauseBattle{}))
@@ -97,6 +102,59 @@ func (protocol InnerProtocol) Init() {
 	protocol.pool.Register(5057,reflect.TypeOf(message.C2M_ForceEnterBattle{}))
 	protocol.pool.Register(5058,reflect.TypeOf(message.C2M_ReqRankList{}))
 	protocol.pool.Register(5059,reflect.TypeOf(message.M2C_RankListResult{}))
+	protocol.pool.Register(5060,reflect.TypeOf(message.M2C_RollInfo{}))
+	protocol.pool.Register(5061,reflect.TypeOf(message.C2M2C_BangDingZhang{}))
+	protocol.pool.Register(5062,reflect.TypeOf(message.C2M_ReqAutoMatch{}))
+	protocol.pool.Register(5063,reflect.TypeOf(message.M2C_MatchTeamInfo{}))
+	protocol.pool.Register(5064,reflect.TypeOf(message.M2C_RemoveMatchTeam{}))
+	protocol.pool.Register(5065,reflect.TypeOf(message.M2C_RemoveMatchPlayerFromMatchTeam{}))
+	protocol.pool.Register(5066,reflect.TypeOf(message.C2M_QuitMatchTeam{}))
+	protocol.pool.Register(5067,reflect.TypeOf(message.M2C_EnterMatchBattleRoom{}))
+	protocol.pool.Register(5068,reflect.TypeOf(message.C2M_TeamStartMatch{}))
+	protocol.pool.Register(5069,reflect.TypeOf(message.C2M2C_MatchRoomPrepare{}))
+	protocol.pool.Register(5070,reflect.TypeOf(message.M2C_StartPaiWeiGame{}))
+	protocol.pool.Register(5071,reflect.TypeOf(message.M2C_MatchBattleRoomEnterPrepare{}))
+	protocol.pool.Register(5072,reflect.TypeOf(message.C2M_PaiWeiLoadFinished{}))
+	protocol.pool.Register(5073,reflect.TypeOf(message.C2M_CancelStartMatch{}))
+	protocol.pool.Register(5074,reflect.TypeOf(message.M2C_RemoveMatchBattleRoom{}))
+	protocol.pool.Register(5075,reflect.TypeOf(message.M2C_RePaiWeiBattleConnect{}))
+	protocol.pool.Register(5076,reflect.TypeOf(message.C2M_UpdateAchievementData{}))
+	protocol.pool.Register(5077,reflect.TypeOf(message.C2M_BuyShopEquip{}))
+	protocol.pool.Register(5078,reflect.TypeOf(message.M2C_BuyShopEquipResult{}))
+	protocol.pool.Register(5079,reflect.TypeOf(message.M2C_BuyCardResult{}))
+	protocol.pool.Register(5080,reflect.TypeOf(message.C2M_BuyShopDiam{}))
+	protocol.pool.Register(5081,reflect.TypeOf(message.M2C_BuyDiamResult{}))
+	protocol.pool.Register(5082,reflect.TypeOf(message.C2M_CheckBuyShopDiam{}))
+	protocol.pool.Register(5083,reflect.TypeOf(message.C2M_BuyShopCard{}))
+	protocol.pool.Register(5084,reflect.TypeOf(message.C2M_CheckBuyShopCard{}))
+	protocol.pool.Register(5085,reflect.TypeOf(message.C2M_CompleteGuide{}))
+	protocol.pool.Register(5086,reflect.TypeOf(message.C2M_BuyShopBox{}))
+	protocol.pool.Register(5087,reflect.TypeOf(message.M2C_BuyShopBoxResult{}))
+	protocol.pool.Register(5088,reflect.TypeOf(message.C2M_BuyHeroCard{}))
+	protocol.pool.Register(5089,reflect.TypeOf(message.M2C_BuyHeroCardResult{}))
+	protocol.pool.Register(5090,reflect.TypeOf(message.C2M_UpgradeHeroLevel{}))
+	protocol.pool.Register(5091,reflect.TypeOf(message.M2C_UpgradeHeroLevelResult{}))
+	protocol.pool.Register(5092,reflect.TypeOf(message.C2M_GetAllNoReadEmail{}))
+	protocol.pool.Register(5093,reflect.TypeOf(message.M2C_GetAllNoReadEmailResult{}))
+	protocol.pool.Register(5094,reflect.TypeOf(message.C2M2C_DeleteAllReadEmail{}))
+	protocol.pool.Register(5095,reflect.TypeOf(message.M2C_CardAward{}))
+	protocol.pool.Register(5096,reflect.TypeOf(message.C2M2C_DeleteBagItem{}))
+	protocol.pool.Register(5097,reflect.TypeOf(message.C2M_GetGift{}))
+	protocol.pool.Register(5098,reflect.TypeOf(message.M2C_GetGiftResult{}))
+	protocol.pool.Register(5099,reflect.TypeOf(message.C2M2C_ChangeRoomCityId{}))
+	protocol.pool.Register(5100,reflect.TypeOf(message.C2M2C_ReStartPauseBattle{}))
+	protocol.pool.Register(5101,reflect.TypeOf(message.C2M_ReqBattleBugData{}))
+	protocol.pool.Register(5102,reflect.TypeOf(message.M2C_ReBattleBugData{}))
+	protocol.pool.Register(5103,reflect.TypeOf(message.C2M_EnterBattleState{}))
+	protocol.pool.Register(5104,reflect.TypeOf(message.C2M_InviteRoom{}))
+	protocol.pool.Register(5105,reflect.TypeOf(message.M2C_InviteRoomResult{}))
+	protocol.pool.Register(5106,reflect.TypeOf(message.C2M_OnlinePlayer{}))
+	protocol.pool.Register(5107,reflect.TypeOf(message.M2C_OnlinePlayerResult{}))
+	protocol.pool.Register(5108,reflect.TypeOf(message.M2C_BattleFinished{}))
+	protocol.pool.Register(5109,reflect.TypeOf(message.C2M_ChangePassword{}))
+	protocol.pool.Register(5110,reflect.TypeOf(message.M2C_ChangePasswordResult{}))
+	protocol.pool.Register(5111,reflect.TypeOf(message.C2M_CheckOnlineGetDiam{}))
+	protocol.pool.Register(5112,reflect.TypeOf(message.M2C_CheckOnlineGetDiam{}))
 }
 
 func (protocol InnerProtocol) Decode(session network.SocketSessionInterface, data []byte) (interface{}, int, error) {
@@ -121,6 +179,9 @@ func (protocol InnerProtocol) Decode(session network.SocketSessionInterface, dat
 	}
 	bodyLen := int(msgHeader.MsgBodyLen)
 	allLen := bodyLen + InnerMessageHeaderLen
+	if msgHeader.MessageId == 5028{
+		log4g.Infof("[%d]",allLen)
+	}
 	var msgType = protocol.pool.GetMessageType(msgHeader.MessageId)
 	if msgType == nil{
 		log4g.Infof("找不到MsgId:%d",msgHeader.MessageId)
@@ -163,7 +224,6 @@ func (protocol InnerProtocol) Encode(session network.SocketSessionInterface, wri
 	}
 	msgHeader = InnerMessageHeader{}
 	msgHeader.MessageId = int32(msg.MsgId)
-
 	msgHeader.RoleId = innerMsg.RoleId
 
 	protoMsg, ok = innerMsg.MsgData.(proto.Message)
@@ -184,6 +244,7 @@ func (protocol InnerProtocol) Encode(session network.SocketSessionInterface, wri
 	if err != nil {
 		return err
 	}
+
 	err = session.WriteBytes(ioBuffer.Bytes())
 	if err != nil {
 		return err

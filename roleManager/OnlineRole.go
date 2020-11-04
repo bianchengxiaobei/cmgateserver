@@ -72,3 +72,15 @@ func (role *OnlineRole)GetLevel()int32{
 func (role *OnlineRole)SetLevel(level int32){
 	role.Role.Level = level
 }
+//func (role *OnlineRole)AddEmail(email bean.Email){
+//	for k,v:= range role.Role.Emails{
+//		if v == 0{
+//			v.EmailId = email.EmailId
+//			v.Get = email.Get
+//			v.EmailTime = email.EmailTime
+//			v.EmailIndex = int32(k)
+//			role.Role.Emails[k] = v
+//			break
+//		}
+//	}
+//}

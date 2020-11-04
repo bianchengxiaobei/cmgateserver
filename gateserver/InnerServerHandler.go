@@ -18,6 +18,7 @@ func (handler InnnerServerMessageHandler) Init() {
 	handler.pool.Register(10002, &msgHandler.LoginSuccessHandler{GateServer: handler.gateServer})
 	handler.pool.Register(10005, &msgHandler.RoleQuitHandler{GateServer: handler.gateServer})
 	handler.pool.Register(10006, &msgHandler.CloseSessionHandler{GateServer: handler.gateServer})
+	handler.pool.Register(10007, &msgHandler.BindZhangHanHandler{GateServer: handler.gateServer})
 }
 
 func (handler InnnerServerMessageHandler) MessageReceived(session network.SocketSessionInterface, message interface{}) error {
@@ -32,7 +33,10 @@ func (handler InnnerServerMessageHandler) MessageReceived(session network.Socket
 			if innerMsg, ok := writeMsg.MsgData.(network.InnerWriteMessage); ok {
 				if innerMsg.RoleId > 0 {
 					//网关找到玩家session直接转发
-					handler.gateServer.SendMsgToClientByRoleId(innerMsg.RoleId, writeMsg.MsgId, innerMsg.MsgData)
+					err := handler.gateServer.SendMsgToClientByRoleId(innerMsg.RoleId, writeMsg.MsgId, innerMsg.MsgData)
+					if err != nil{
+						log4g.Info(err.Error())
+					}
 				}else{
 					log4g.Infof("RoleId == 0,MsgId:[%d]",writeMsg.MsgId)
 				}
